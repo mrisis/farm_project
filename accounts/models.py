@@ -4,6 +4,7 @@ from . managers import UserManager
 from core.models import BaseUserModel, BaseModel
 from django.utils.timezone import now
 from datetime import timedelta
+from core.utils import generate_otp_code, send_sms_otp_code
 
 
 class User(AbstractBaseUser, BaseUserModel, PermissionsMixin):
@@ -25,6 +26,12 @@ class User(AbstractBaseUser, BaseUserModel, PermissionsMixin):
 
     def __str__(self):
         return self.mobile_number
+
+    def create_and_send_otp(self):
+        otp_code = generate_otp_code()
+        send_sms_otp_code(self.mobile_number, otp_code)
+        OtpCode.objects.create(mobile_number=self.mobile_number, otp_code=otp_code)
+
 
 
 
@@ -52,4 +59,15 @@ class OtpCode(BaseModel):
 
     def is_valid(self):
         return now() < self.created_at + timedelta(seconds=80)
+
+    def verify_otp_code(self, provided_otp):
+        if not self.is_valid():
+            return False
+        if self.otp_code != provided_otp:
+            return False
+        self.is_verified = True
+        self.save()
+        return True
+
+
 
