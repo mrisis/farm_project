@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime
 import jwt
 from django.conf import settings
+from random import randint
 
 
 JWT_SECRET = settings.SECRET_KEY
@@ -33,3 +34,8 @@ def verify_jwt_token(token):
 
 def decode_jwt_token(token):
     return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+
+
+
+def generate_otp_code():
+    return str(randint(100000, 999999))

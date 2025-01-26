@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, OtpCode
 from .forms import UserCreationForm,UserchangeForm
 
 class UserAdmin(BaseUserAdmin):
@@ -30,4 +30,11 @@ class UserAdmin(BaseUserAdmin):
         return form
 
 
+class OtpCodeAdmin(admin.ModelAdmin):
+    list_display = ['mobile_number','otp_code','is_verified']
+    list_filter = ('is_verified',)
+    search_fields = ['mobile_number','otp_code']
+
+
 admin.site.register(User,UserAdmin)
+admin.site.register(OtpCode,OtpCodeAdmin)
