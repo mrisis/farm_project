@@ -47,11 +47,12 @@ def send_sms_otp_code(mobile_number, code):
     try:
         api = KavenegarAPI(env.kavenegar_api_key)
         params = {
-            'sender': '',
             'receptor': mobile_number,
-            'message': f'کد تایید شما: {code}'
+            'template': 'sendotp',
+            'token': code,
+            'type': 'sms'
         }
-        response = api.sms_send(params)
+        response = api.verify_lookup(params)
     except APIException as e:
         print(e)
     except HTTPException as e:
