@@ -24,6 +24,7 @@ class EnvSettings(BaseSettings):
     db_password: str
     db_host: str
     db_port: str
+    kavenegar_api_key : str
     # add fields you need
     model_config = SettingsConfigDict(
         env_file='.env'

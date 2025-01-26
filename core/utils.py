@@ -2,6 +2,8 @@ from datetime import timedelta, datetime
 import jwt
 from django.conf import settings
 from random import randint
+from kavenegar import *
+from config.settings import env
 
 
 JWT_SECRET = settings.SECRET_KEY
@@ -39,3 +41,19 @@ def decode_jwt_token(token):
 
 def generate_otp_code():
     return str(randint(100000, 999999))
+
+
+def send_sms_otp_code(mobile_number, code):
+    try:
+        api = KavenegarAPI(env.kavenegar_api_key)
+        params = {
+            'sender': '',
+            'receptor': mobile_number,
+            'message': f'کد تایید شما: {code}'
+        }
+        response = api.sms_send(params)
+    except APIException as e:
+        print(e)
+    except HTTPException as e:
+        print(e)
+
