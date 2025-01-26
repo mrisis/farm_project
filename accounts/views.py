@@ -1,4 +1,6 @@
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,10 +11,11 @@ from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSig
 from django.shortcuts import get_object_or_404
 
 
-class SendOtpApiView(APIView):
+class SendOtpApiView(GenericAPIView):
+    serializer_class = SendOtpCodeSerializer
 
     def post(self,request):
-        serializer = SendOtpCodeSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             mobile_number = serializer.validated_data['mobile_number']
             otp_code = generate_otp_code()
@@ -28,10 +31,11 @@ class SendOtpApiView(APIView):
 
 
 
-class VerifyOtpApiView(APIView):
+class VerifyOtpApiView(GenericAPIView):
+    serializer_class = VerifyOtpCodeSerializer
 
     def post(self, request):
-        serializer = VerifyOtpCodeSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             mobile_number = serializer.validated_data['mobile_number']
             otp_code = serializer.validated_data['otp_code']
@@ -61,10 +65,11 @@ class VerifyOtpApiView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserSignupApiView(APIView):
+class UserSignupApiView(GenericAPIView):
+    serializer_class = UserSignupSerializer
 
     def post(self,request):
-        serializer = UserSignupSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         mobile_number = serializer.validated_data['mobile_number']
         user = User.objects.create(mobile_number=mobile_number)
