@@ -31,5 +31,11 @@ class Post(BaseModel):
         return f'{self.title} by {self.author}'
 
 
+class PostImage(BaseModel):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='posts/images/')
+    caption = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return f'Image for {self.post.title} by ID {self.post.id}'
 
