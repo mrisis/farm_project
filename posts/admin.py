@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PostCategory, Post, PostImage, Comment
+from .models import PostCategory, Post, PostImage, Comment, Rating
 
 
 class PostCategoryAdmin(admin.ModelAdmin):
@@ -26,7 +26,13 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ['post','post_id', 'author', 'author_id']
     list_filter = ['post', 'author']
 
+class RatingAdmin(admin.ModelAdmin):
+    list_display = ['id','post','post_id', 'author','author_id', 'score']
+    search_fields = ['post','post_id', 'author', 'author_id']
+    list_filter = ['post', 'author']
+
 admin.site.register(PostCategory, PostCategoryAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(PostImage, PostImageAdmin)
 admin.site.register(Comment, CommentAdmin)
+admin.site.register(Rating, RatingAdmin)
