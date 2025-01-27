@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     #local apps
     "accounts",
     "core",
+    "posts",
 
     #third party apps
     'drf_yasg',
