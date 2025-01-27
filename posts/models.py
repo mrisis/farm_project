@@ -40,11 +40,6 @@ class PostImage(BaseModel):
     def __str__(self):
         return f'Image for {self.post.title} by ID {self.post.id}'
 
-    def save(self, *args, **kwargs):
-        if not self.asset.content_object:
-            self.asset.content_object = self.post
-            self.asset.save()
-        super().save(*args, **kwargs)
 
 
 class Comment(BaseModel):

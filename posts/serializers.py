@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from .models import PostCategory, Post
+from .models import PostCategory, Post, PostImage
 from accounts.serializers import UserSerializer
 from accounts.models import User
+from files.models import Asset
+from files.serializers import AssetSerializer
 
 class ParentPostCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,6 +36,49 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'body', 'author', 'author_id', 'category', 'category_id', 'created_at']
+
+
+class PostImageSerializer(serializers.ModelSerializer):
+    asset = AssetSerializer(read_only=True)
+    asset_data = serializers.JSONField(write_only=True, required=False)
+    post = PostSerializer(read_only=True)
+    post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
+
+    class Meta:
+        model = PostImage
+        fields = ['id', 'post', 'post_id', 'asset', 'asset_data', 'caption']
+
+    def validate(self, attrs):
+        asset_data = attrs.get('asset_data')
+        if asset_data:
+            if not any([asset_data.get('owner'), asset_data.get('file'), asset_data.get('image')]):
+                raise serializers.ValidationError({
+                    'asset_data': 'At least one of "owner", "file", or "image" must be provided for asset.'
+                })
+        else:
+            raise serializers.ValidationError({
+                'asset_data': 'This field is required to create an asset.'
+            })
+        return attrs
+
+    def create(self, validated_data):
+        asset_data = validated_data.pop('asset_data')
+
+        owner_id = asset_data.get('owner')
+        if owner_id:
+            try:
+                asset_data['owner'] = User.objects.get(id=owner_id)
+            except User.DoesNotExist:
+                raise serializers.ValidationError({'asset_data': 'Invalid owner ID.'})
+
+        asset = Asset.objects.create(**asset_data)
+
+        post_image = PostImage.objects.create(asset=asset, **validated_data)
+        return post_image
+
+
+
+
 
 
 

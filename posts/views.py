@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import PostCategory, Post
-from .serializers import PostCategorySerializer, PostSerializer
+from .models import PostCategory, Post, PostImage
+from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer
 from rest_framework.generics import GenericAPIView
 
 
@@ -89,3 +89,48 @@ class PostDeleteApiView(APIView):
         post = get_object_or_404(Post, pk=pk)
         post.delete()
         return Response({"detail": "PostDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+class PostImageCreateApiView(GenericAPIView):
+    serializer_class = PostImageSerializer
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+class PostImageListApiView(GenericAPIView):
+    serializer_class = PostImageSerializer
+    def get(self, request, post_id):
+        post_images = PostImage.objects.filter(post_id=post_id)
+        serializer = self.get_serializer(post_images, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PostImageUpdateApiView(GenericAPIView):
+    serializer_class = PostImageSerializer
+    def put(self, request, post_image_id):
+        try:
+            post_image = PostImage.objects.get(id=post_image_id)
+        except PostImage.DoesNotExist:
+            return Response({"detail": "PostImageNotFound."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(post_image, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostImageDeleteApiView(APIView):
+    def delete(self, request, post_image_id):
+        try:
+            post_image = PostImage.objects.get(id=post_image_id)
+        except PostImage.DoesNotExist:
+            return Response({"detail": "PostImageNotFound."}, status=status.HTTP_404_NOT_FOUND)
+
+        post_image.delete()
+        return Response({"detail": "PostImageDeletedSuccessfully."}, status=status.HTTP_204_NO_CONTENT)
