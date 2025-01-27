@@ -2,6 +2,7 @@ from django.db import models
 from core.models import BaseModel
 from django.utils.text import slugify
 from accounts.models import User
+from files.models import Asset
 
 
 
@@ -33,11 +34,17 @@ class Post(BaseModel):
 
 class PostImage(BaseModel):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='posts/images/')
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='post_images')
     caption = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f'Image for {self.post.title} by ID {self.post.id}'
+
+    def save(self, *args, **kwargs):
+        if not self.asset.content_object:
+            self.asset.content_object = self.post
+            self.asset.save()
+        super().save(*args, **kwargs)
 
 
 class Comment(BaseModel):
