@@ -18,3 +18,9 @@ class UserSignupSerializer(serializers.ModelSerializer):
         model = User
         fields = ['mobile_number',]
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','first_name','last_name', 'mobile_number', 'email','gender', 'is_active', 'created_at', 'updated_at',]
+
