@@ -20,7 +20,7 @@ class SendOtpApiView(GenericAPIView):
         mobile_number = serializer.validated_data['mobile_number']
         user = get_object_or_404(User, mobile_number=mobile_number)
         user.create_and_send_otp()
-        return Response({'message': 'OTP code sent successfully'}, status=status.HTTP_200_OK)
+        return Response({'message': 'OTP_CodeSentSuccessfully'}, status=status.HTTP_200_OK)
 
 
 
@@ -40,12 +40,12 @@ class VerifyOtpApiView(GenericAPIView):
             is_verified=False
         ).first()
         if not otp or not otp.verify_otp_code(otp_code):
-            return Response({'message': 'Invalid or Expired OTP code'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'InvalidOrExpiredOTP_Code'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.get(mobile_number=mobile_number)
         refresh = RefreshToken.for_user(user)
         data = {
-            'message': 'OTP verified successfully',
+            'message': 'OTP_VerifiedSuccessfully',
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
@@ -63,7 +63,7 @@ class UserSignupApiView(GenericAPIView):
         mobile_number = serializer.validated_data['mobile_number']
         user = User.objects.create(mobile_number=mobile_number)
         user.create_and_send_otp()
-        return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'UserCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
 
 
 
