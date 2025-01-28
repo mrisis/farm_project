@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import PostCategory, Post, PostImage, Comment, Rating
 from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer, RatingSerializer
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -211,7 +212,13 @@ class RatingDeleteApiView(APIView):
         return Response({"detail": "RatingDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
 
 
-
+class MyPostListApiView(GenericAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        posts = Post.objects.filter(author=request.user)
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
