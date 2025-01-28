@@ -64,3 +64,14 @@ class Rating(BaseModel):
     class Meta:
         unique_together = ['post', 'author']
 
+
+class FavoritePost(BaseModel):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='favorites')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorited_by')
+
+    def __str__(self):
+        return f"User {self.user} favorited Post {self.post}"
+
+    class Meta:
+        unique_together = ['post', 'user']
+        ordering = ['-created_at']
