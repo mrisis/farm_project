@@ -1,9 +1,10 @@
+from django.core.serializers import serialize
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import PostCategory, Post, PostImage, Comment
-from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer
+from .models import PostCategory, Post, PostImage, Comment, Rating
+from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer, RatingSerializer
 from rest_framework.generics import GenericAPIView
 
 
@@ -178,11 +179,36 @@ class CommentDeleteApiView(APIView):
         return Response({"detail": "CommentDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
 
 
+class RatingCreateApiView(GenericAPIView):
+    serializer_class = RatingSerializer
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class RatingDetailApiView(GenericAPIView):
+    serializer_class = RatingSerializer
+    def get(self, request, pk, *args, **kwargs):
+        rating = get_object_or_404(Rating, pk=pk)
+        serializer = self.get_serializer(rating)
+        return Response(serializer.data)
 
 
+class RatingListApiView(GenericAPIView):
+    serializer_class = RatingSerializer
+    def get(self, request, post_id):
+        ratings = Rating.objects.filter(post_id=post_id)
+        serializer = self.get_serializer(ratings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class RatingDeleteApiView(APIView):
+    def delete(self, request, pk, *args, **kwargs):
+        rating = get_object_or_404(Rating, pk=pk)
+        rating.delete()
+        return Response({"detail": "RatingDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
 
 
 

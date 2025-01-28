@@ -30,5 +30,11 @@ urlpatterns = [
     path('comment/<int:pk>/update/', views.CommentUpdateApiView.as_view(), name='comment-update'),
     path('comment/<int:pk>/delete/', views.CommentDeleteApiView.as_view(), name='comment-delete'),
 
+    #rating urls
+    path('create-rating/', views.RatingCreateApiView.as_view(), name='create-rating'),
+    path('rating/<int:pk>/detail/', views.RatingDetailApiView.as_view(), name='rating-detail'),
+    path('rating/<int:post_id>/list/', views.RatingListApiView.as_view(), name='rating-update'),
+    path('rating/<int:pk>/delete/', views.RatingDeleteApiView.as_view(), name='rating-update'),
+
 
 ]

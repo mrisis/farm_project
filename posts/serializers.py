@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PostCategory, Post, PostImage, Comment
+from .models import PostCategory, Post, PostImage, Comment, Rating
 from accounts.serializers import UserSerializer
 from accounts.models import User
 from files.models import Asset
@@ -103,5 +103,26 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 
+class RatingSerializer(serializers.ModelSerializer):
+    post = PostSerializer(read_only=True)
+    post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
+    author = UserSerializer(read_only=True)
+    author_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='author', write_only=True)
+
+    class Meta:
+        model = Rating
+        fields = ['id', 'post', 'post_id', 'author', 'author_id', 'score', 'created_at']
+
+    def validate_score(self, value):
+        if value < 0 or value > 5:
+            raise serializers.ValidationError("Score must be between 0 and 5.")
+        return value
+
+    def validate(self, data):
+        post = data.get('post')
+        author = data.get('author')
+        if Rating.objects.filter(post=post, author=author).exists():
+            raise serializers.ValidationError("You have already rated this post.")
+        return data
 
 
