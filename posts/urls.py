@@ -23,5 +23,12 @@ urlpatterns = [
     path('post-images/<int:post_image_id>/update/', views.PostImageUpdateApiView.as_view(), name='post-image-update'),
     path('post-images/<int:post_image_id>/delete/', views.PostImageDeleteApiView.as_view(), name='post-image-delete'),
 
+    #comment urls
+    path('create-comment/', views.CommentCreateApiView.as_view(), name='create-comment'),
+    path('comment/<int:pk>/detail/', views.CommentDetailApiView.as_view(), name='list-comments'),
+    path('comments/<int:post_id>/list/', views.CommentListApiView.as_view(), name='comment-update'),
+    path('comment/<int:pk>/update/', views.CommentUpdateApiView.as_view(), name='comment-update'),
+    path('comment/<int:pk>/delete/', views.CommentDeleteApiView.as_view(), name='comment-delete'),
+
 
 ]

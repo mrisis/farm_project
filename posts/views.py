@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import PostCategory, Post, PostImage
-from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer
+from .models import PostCategory, Post, PostImage, Comment
+from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer
 from rest_framework.generics import GenericAPIView
 
 
@@ -134,3 +134,62 @@ class PostImageDeleteApiView(APIView):
 
         post_image.delete()
         return Response({"detail": "PostImageDeletedSuccessfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+class CommentCreateApiView(GenericAPIView):
+    serializer_class = CommentSerializer
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CommentDetailApiView(GenericAPIView):
+    serializer_class = CommentSerializer
+    def get(self, request, pk, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=pk)
+        serializer = self.get_serializer(comment)
+        return Response(serializer.data)
+
+
+class CommentListApiView(GenericAPIView):
+    serializer_class = CommentSerializer
+    def get(self, request, post_id):
+        comments = Comment.objects.filter(post_id=post_id)
+        serializer = self.get_serializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CommentUpdateApiView(GenericAPIView):
+    serializer_class = CommentSerializer
+    def put(self, request, pk, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=pk)
+        serializer = self.get_serializer(comment, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class CommentDeleteApiView(APIView):
+    def delete(self, request, pk, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=pk)
+        comment.delete()
+        return Response({"detail": "CommentDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
