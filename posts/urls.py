@@ -37,5 +37,10 @@ urlpatterns = [
     path('rating/<int:post_id>/list/', views.RatingListApiView.as_view(), name='rating-update'),
     path('rating/<int:pk>/delete/', views.RatingDeleteApiView.as_view(), name='rating-update'),
 
+    # favourite posts urls
+    path('favorite-post/add/', views.FavoritePostAddApiView.as_view(), name='favourite-posts'),
+    path('favorite-post/<int:pk>/remove/', views.FavoritePostRemoveApiView.as_view(), name='favourite-posts'),
+    path('my-favorite-posts/', views.FavoritePostListApiView.as_view(), name='my-favourite-posts'),
+
 
 ]

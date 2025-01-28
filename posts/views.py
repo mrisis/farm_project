@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import PostCategory, Post, PostImage, Comment, Rating
-from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer, RatingSerializer
+from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost
+from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer, RatingSerializer, FavoritePostSerializer
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -223,6 +223,28 @@ class MyPostListApiView(GenericAPIView):
 
 
 
+class FavoritePostAddApiView(GenericAPIView):
+    serializer_class = FavoritePostSerializer
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class FavoritePostRemoveApiView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, pk, *args, **kwargs):
+        favorite_post = get_object_or_404(FavoritePost, pk=pk)
+        favorite_post.delete()
+        return Response({"detail": "FavoritePostDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
 
+
+class FavoritePostListApiView(GenericAPIView):
+    serializer_class = FavoritePostSerializer
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        favorite_posts = FavoritePost.objects.filter(user=request.user)
+        serializer = self.get_serializer(favorite_posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

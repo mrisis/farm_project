@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PostCategory, Post, PostImage, Comment, Rating
+from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost
 from accounts.serializers import UserSerializer
 from accounts.models import User
 from files.models import Asset
@@ -126,3 +126,19 @@ class RatingSerializer(serializers.ModelSerializer):
         return data
 
 
+class FavoritePostSerializer(serializers.ModelSerializer):
+    post = PostSerializer(read_only=True)
+    post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
+    user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='user', write_only=True)
+
+    class Meta:
+        model = FavoritePost
+        fields = ['id', 'post', 'post_id', 'user', 'user_id', 'created_at']
+
+    def validate(self, data):
+        post = data.get('post')
+        user = data.get('user')
+        if FavoritePost.objects.filter(post=post, user=user).exists():
+            raise serializers.ValidationError("You have already favorited this post.")
+        return data
