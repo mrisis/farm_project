@@ -8,7 +8,7 @@ from files.serializers import AssetSerializer
 class ParentPostCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PostCategory
-        fields = ['id', 'name', 'slug', 'description']
+        fields = ['id', 'name', 'icon', 'slug', 'description']
 
 class PostCategorySerializer(serializers.ModelSerializer):
     parent = ParentPostCategorySerializer(read_only=True)
@@ -17,7 +17,7 @@ class PostCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostCategory
-        fields = ['id', 'name', 'slug', 'description', 'parent', 'parent_id']
+        fields = ['id', 'name', 'icon', 'slug', 'description', 'parent', 'parent_id']
 
     def validate_parent_id(self, value):
         if value == self.instance:

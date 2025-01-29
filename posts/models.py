@@ -9,6 +9,7 @@ from files.models import Asset
 class PostCategory(BaseModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, blank=True)
+    icon = models.FileField(upload_to='post_category_icons/', blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True, related_name='subcategories')
 
