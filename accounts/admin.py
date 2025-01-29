@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, OtpCode
+from .models import User, OtpCode, RoleCategory
 from .forms import UserCreationForm,UserchangeForm
 
 class UserAdmin(BaseUserAdmin):
@@ -36,5 +36,12 @@ class OtpCodeAdmin(admin.ModelAdmin):
     search_fields = ['mobile_number','otp_code']
 
 
+class RoleCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name','description']
+    search_fields = ['name','description']
+    list_filter = ('name',)
+
+
 admin.site.register(User,UserAdmin)
 admin.site.register(OtpCode,OtpCodeAdmin)
+admin.site.register(RoleCategory,RoleCategoryAdmin)
