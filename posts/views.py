@@ -7,6 +7,7 @@ from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost
 from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer, RatingSerializer, FavoritePostSerializer
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
+from core.utils import CustomPageNumberPagination
 
 
 
@@ -21,6 +22,7 @@ class PostCategoryCreateApiView(GenericAPIView):
 
 class PostCategoryListApiView(GenericAPIView):
     serializer_class = PostCategorySerializer
+    pagination_class = CustomPageNumberPagination
     def get(self, request):
         categories = PostCategory.objects.all()
         serializer = self.get_serializer(categories, many=True)
@@ -63,6 +65,7 @@ class PostCreateApiView(GenericAPIView):
 
 class PostListApiView(GenericAPIView):
     serializer_class = PostSerializer
+    pagination_class = CustomPageNumberPagination
     def get(self, request):
         posts = Post.objects.all()
         serializer = self.get_serializer(posts, many=True)
@@ -106,6 +109,7 @@ class PostImageCreateApiView(GenericAPIView):
 
 class PostImageListApiView(GenericAPIView):
     serializer_class = PostImageSerializer
+    pagination_class = CustomPageNumberPagination
     def get(self, request, post_id):
         post_images = PostImage.objects.filter(post_id=post_id)
         serializer = self.get_serializer(post_images, many=True)
@@ -157,6 +161,7 @@ class CommentDetailApiView(GenericAPIView):
 
 class CommentListApiView(GenericAPIView):
     serializer_class = CommentSerializer
+    pagination_class = CustomPageNumberPagination
     def get(self, request, post_id):
         comments = Comment.objects.filter(post_id=post_id)
         serializer = self.get_serializer(comments, many=True)
@@ -199,6 +204,7 @@ class RatingDetailApiView(GenericAPIView):
 
 class RatingListApiView(GenericAPIView):
     serializer_class = RatingSerializer
+    pagination_class = CustomPageNumberPagination
     def get(self, request, post_id):
         ratings = Rating.objects.filter(post_id=post_id)
         serializer = self.get_serializer(ratings, many=True)
@@ -215,6 +221,7 @@ class RatingDeleteApiView(APIView):
 class MyPostListApiView(GenericAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
     def get(self, request):
         posts = Post.objects.filter(author=request.user)
         serializer = self.get_serializer(posts, many=True)
@@ -244,6 +251,7 @@ class FavoritePostRemoveApiView(APIView):
 class FavoritePostListApiView(GenericAPIView):
     serializer_class = FavoritePostSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
     def get(self, request):
         favorite_posts = FavoritePost.objects.filter(user=request.user)
         serializer = self.get_serializer(favorite_posts, many=True)
