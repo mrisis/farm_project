@@ -3,7 +3,7 @@ from .models import Asset
 
 
 class AssetAdmin(admin.ModelAdmin):
-    list_display = ['id','owner', 'file', 'image']
+    list_display = ['id','title','owner', 'file', 'image']
     search_fields = ['owner', 'file', 'image']
     list_filter = ['owner', 'file', 'image']
 
