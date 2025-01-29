@@ -76,3 +76,12 @@ class RoleCategory(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class Role(BaseModel):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
+    category = models.ForeignKey(RoleCategory, on_delete=models.CASCADE, related_name='roles')
+
+    def __str__(self):
+        return self.name
