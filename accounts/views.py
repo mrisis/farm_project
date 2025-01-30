@@ -1,3 +1,4 @@
+from django.template.defaultfilters import first
 from rest_framework.generics import GenericAPIView
 
 from rest_framework.response import Response
@@ -62,7 +63,9 @@ class UserSignupApiView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         mobile_number = serializer.validated_data['mobile_number']
-        user = User.objects.create(mobile_number=mobile_number)
+        first_name = serializer.validated_data['first_name']
+        last_name = serializer.validated_data['last_name']
+        user = User.objects.create(mobile_number=mobile_number, first_name=first_name, last_name=last_name)
         user.create_and_send_otp()
         return Response({'message': 'UserCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
 

@@ -16,7 +16,13 @@ class VerifyOtpCodeSerializer(serializers.ModelSerializer):
 class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['mobile_number',]
+        fields = ['mobile_number', 'first_name', 'last_name']
+        extra_kwargs = {
+            'first_name': {'required': True, 'allow_null': False, 'allow_blank': False},
+            'last_name': {'required': True, 'allow_null': False, 'allow_blank': False},
+        }
+
+
 
 
 class UserSerializer(serializers.ModelSerializer):
