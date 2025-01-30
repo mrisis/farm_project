@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "core",
     "posts",
     "files",
+    "locations",
 
     #third party apps
     'drf_yasg',
