@@ -15,5 +15,12 @@ urlpatterns = [
     path('role-category/<int:pk>/update/', views.RoleCategoryUpdateApiView.as_view(), name='role_category_update'),
     path('role-category/<int:pk>/delete/', views.RoleCategoryDeleteApiView.as_view(), name='role_category_delete'),
 
+    # role urls
+    path('role/create/', views.RoleCreateApiView.as_view(), name='role_create'),
+    path('role/<int:pk>/detail/', views.RoleDetailApiView.as_view(), name='role_detail'),
+    path('role/list/', views.RoleListApiView.as_view(), name='role_list'),
+    path('role/<int:pk>/update/', views.RoleUpdateApiView.as_view(), name='role_update'),
+    path('role/<int:pk>/delete/', views.RoleDeleteApiView.as_view(), name='role_delete'),
+
 
 ]

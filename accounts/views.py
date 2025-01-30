@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, OtpCode, RoleCategory
+from .models import User, OtpCode, RoleCategory, Role
 from core.utils import send_sms_otp_code
 from core.utils import generate_otp_code
-from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer
+from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer, RoleSerializer
 from django.shortcuts import get_object_or_404
 
 
@@ -110,3 +110,43 @@ class RoleCategoryDeleteApiView(APIView):
 
 
 
+class RoleCreateApiView(GenericAPIView):
+    serializer_class = RoleSerializer
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class RoleDetailApiView(GenericAPIView):
+    serializer_class = RoleSerializer
+    def get(self, request, pk):
+        role = get_object_or_404(Role, pk=pk)
+        serializer = self.get_serializer(role)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoleListApiView(GenericAPIView):
+    serializer_class = RoleSerializer
+    def get(self, request):
+        roles = Role.objects.all()
+        serializer = self.get_serializer(roles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoleUpdateApiView(GenericAPIView):
+    serializer_class = RoleSerializer
+    def put(self, request, pk):
+        role = get_object_or_404(Role, pk=pk)
+        serializer = self.get_serializer(role, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoleDeleteApiView(APIView):
+    def delete(self, request, pk):
+        role = get_object_or_404(Role, pk=pk)
+        role.delete()
+        return Response({'message': 'RoleDeletedSuccessfully'}, status=status.HTTP_204_NO_CONTENT)
