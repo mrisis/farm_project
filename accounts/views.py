@@ -2,11 +2,12 @@ from rest_framework.generics import GenericAPIView
 
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, OtpCode
+from .models import User, OtpCode, RoleCategory
 from core.utils import send_sms_otp_code
 from core.utils import generate_otp_code
-from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer
+from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer
 from django.shortcuts import get_object_or_404
 
 
@@ -66,8 +67,46 @@ class UserSignupApiView(GenericAPIView):
         return Response({'message': 'UserCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
 
 
+class RoleCategoryCreateApiView(GenericAPIView):
+    serializer_class = RoleCategorySerializer
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class RoleCategoryDetailApiView(GenericAPIView):
+    serializer_class = RoleCategorySerializer
+    def get(self, request, pk):
+        role_category = get_object_or_404(RoleCategory, pk=pk)
+        serializer = self.get_serializer(role_category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoleCategoryListApiView(GenericAPIView):
+    serializer_class = RoleCategorySerializer
+    def get(self, request):
+        role_categories = RoleCategory.objects.all()
+        serializer = self.get_serializer(role_categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoleCategoryUpdateApiView(GenericAPIView):
+    serializer_class = RoleCategorySerializer
+    def put(self, request, pk):
+        role_category = get_object_or_404(RoleCategory, pk=pk)
+        serializer = self.get_serializer(role_category, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoleCategoryDeleteApiView(APIView):
+    def delete(self, request, pk):
+        role_category = get_object_or_404(RoleCategory, pk=pk)
+        role_category.delete()
+        return Response({'message': 'RoleCategoryDeletedSuccessfully'}, status=status.HTTP_204_NO_CONTENT)
 
 
 

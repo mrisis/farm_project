@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import OtpCode, User
+from .models import OtpCode, User, RoleCategory
 
 class SendOtpCodeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,3 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','first_name','last_name', 'mobile_number', 'email','gender', 'is_active', 'created_at', 'updated_at',]
 
+
+class RoleCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoleCategory
+        fields = ['id','name', 'description',]
