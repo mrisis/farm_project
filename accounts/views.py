@@ -10,7 +10,7 @@ from core.utils import send_sms_otp_code
 from core.utils import generate_otp_code
 from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer, RoleSerializer
 from django.shortcuts import get_object_or_404
-
+from django.http import Http404
 
 class SendOtpApiView(GenericAPIView):
     serializer_class = SendOtpCodeSerializer
@@ -20,7 +20,10 @@ class SendOtpApiView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         mobile_number = serializer.validated_data['mobile_number']
-        user = get_object_or_404(User, mobile_number=mobile_number)
+        try:
+            user = get_object_or_404(User, mobile_number=mobile_number)
+        except Http404:
+            return Response({"message": "user dose not exist"}, status=status.HTTP_400_BAD_REQUEST)
         user.create_and_send_otp()
         return Response({'message': 'OTP_CodeSentSuccessfully'}, status=status.HTTP_200_OK)
 
