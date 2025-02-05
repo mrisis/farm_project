@@ -13,18 +13,19 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from datetime import timedelta
-
+import os
 
 
 class EnvSettings(BaseSettings):
-    debug: bool = False
-    secret_key: str
-    db_name: str
-    db_user: str
-    db_password: str
-    db_host: str
-    db_port: str
-    kavenegar_api_key : str
+    debug: bool = True
+    secret_key: str = "dsadsdas"
+    default_db: str = "sqlie"
+    db_name: str = "FarmShop"
+    db_user: str = "postgres"
+    db_password: str = "password"
+    db_host: str = "localhost"
+    db_port: str = "5432"
+    kavenegar_api_key: str = "sadasd"
     # add fields you need
     model_config = SettingsConfigDict(
         env_file='.env'
@@ -108,16 +109,27 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env.db_name,
-        'USER': env.db_user,
-        'PASSWORD': env.db_password,
-        'HOST': env.db_host,
-        'PORT': env.db_port
+
+if env.default_db == "postgres":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env.db_name,
+            'USER': env.db_user,
+            'PASSWORD': env.db_password,
+            'HOST': env.db_host,
+            'PORT': env.db_port
+        }
     }
-}
+
+else:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
