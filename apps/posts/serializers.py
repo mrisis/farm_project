@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost
-from accounts.serializers import UserSerializer
-from accounts.models import User
-from files.models import Asset
-from files.serializers import AssetSerializer
+from apps.accounts.serializers import UserSerializer
+from apps.accounts.models import User
+from apps.files.models import Asset
+from apps.files.serializers import AssetSerializer
 
 class ParentPostCategorySerializer(serializers.ModelSerializer):
     class Meta:

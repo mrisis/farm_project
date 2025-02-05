@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from datetime import timedelta
-
+import os
 
 
 class EnvSettings(BaseSettings):
@@ -59,23 +59,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #local apps
-    "accounts",
+    "apps.accounts",
     "core",
-    "posts",
-    "files",
-    "locations",
+    "apps.posts",
+    "apps.files",
+    "apps.locations",
 
     #third party apps
     'drf_yasg',
     'rest_framework_simplejwt',
     'rest_framework',
-
+    "corsheaders",
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -106,6 +107,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
@@ -187,3 +189,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
+
+
+# django-cors-headers
+# https://pypi.org/project/django-cors-headers/
+CORS_ALLOW_ALL_ORIGINS = True

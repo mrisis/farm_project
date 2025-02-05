@@ -7,7 +7,7 @@ from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost
 from .serializers import PostCategorySerializer, PostSerializer, PostImageSerializer, CommentSerializer, RatingSerializer, FavoritePostSerializer
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
-from core.utils import CustomPageNumberPagination
+from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 
 
 
