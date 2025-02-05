@@ -4,7 +4,7 @@ from .managers import UserManager
 from django.utils.timezone import now
 from datetime import timedelta
 from core.models import BaseUserModel, BaseModel
-from core.utils import generate_otp_code, send_sms_otp_code
+from core.utils import generic_funcs
 
 
 class User(AbstractBaseUser, BaseUserModel, PermissionsMixin):
@@ -28,9 +28,9 @@ class User(AbstractBaseUser, BaseUserModel, PermissionsMixin):
         return self.mobile_number
 
     def create_and_send_otp(self):
-        otp_code = generate_otp_code()
+        otp_code = generic_funcs.generate_otp_code()
         print(otp_code)
-        send_sms_otp_code(self.mobile_number, otp_code)
+        generic_funcs.send_sms_otp_code(self.mobile_number, otp_code)
         OtpCode.objects.create(mobile_number=self.mobile_number, otp_code=otp_code)
 
 

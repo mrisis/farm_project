@@ -6,8 +6,6 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, OtpCode, RoleCategory, Role
-from core.utils import send_sms_otp_code
-from core.utils import generate_otp_code
 from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer, RoleSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
