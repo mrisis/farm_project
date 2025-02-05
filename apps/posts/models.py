@@ -1,8 +1,8 @@
 from django.db import models
-from core.models import BaseModel
 from django.utils.text import slugify
-from accounts.models import User
-from files.models import Asset
+from core.models import BaseModel
+from apps.accounts.models import User
+from apps.files.models import Asset
 
 
 

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 app_name = 'accounts'
@@ -21,6 +21,5 @@ urlpatterns = [
     path('role/list/', views.RoleListApiView.as_view(), name='role_list'),
     path('role/<int:pk>/update/', views.RoleUpdateApiView.as_view(), name='role_update'),
     path('role/<int:pk>/delete/', views.RoleDeleteApiView.as_view(), name='role_delete'),
-
 
 ]

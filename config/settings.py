@@ -59,11 +59,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #local apps
-    "accounts",
+    "apps.accounts",
     "core",
-    "posts",
-    "files",
-    "locations",
+    "apps.posts",
+    "apps.files",
+    "apps.locations",
 
     #third party apps
     'drf_yasg',

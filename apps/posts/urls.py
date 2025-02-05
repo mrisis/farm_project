@@ -3,6 +3,7 @@ from . import views
 
 app_name = 'posts'
 urlpatterns = [
+    
     # post category urls
     path('create-category/', views.PostCategoryCreateApiView.as_view(), name='create-category'),
     path('list-categories/', views.PostCategoryListApiView.as_view(), name='list-categories'),

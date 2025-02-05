@@ -43,7 +43,7 @@ def decode_jwt_token(token):
 
 
 def generate_otp_code():
-    return str(randint(100000, 999999))
+    return str(randint(10000, 99999))
 
 
 def send_sms_otp_code(mobile_number, code):
