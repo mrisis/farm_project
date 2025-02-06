@@ -47,6 +47,7 @@ class RoleAdmin(admin.ModelAdmin):
     list_filter = ('name', 'category')
 
 
+
 admin.site.register(User,UserAdmin)
 admin.site.register(OtpCode,OtpCodeAdmin)
 admin.site.register(RoleCategory,RoleCategoryAdmin)

@@ -1,9 +1,13 @@
 from rest_framework import serializers
+from urllib3 import request
+
 from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost
 from apps.accounts.serializers import UserSerializer
 from apps.accounts.models import User
 from apps.files.models import Asset
 from apps.files.serializers import AssetSerializer
+from datetime import timedelta
+from django.utils import timezone
 
 class ParentPostCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,58 +27,73 @@ class PostCategorySerializer(serializers.ModelSerializer):
         if value == self.instance:
             raise serializers.ValidationError("A category cannot be its own parent.")
         return value
-
-
-class PostSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    author_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='author', write_only=True)
-
-    category = PostCategorySerializer(read_only=True)
-    category_id = serializers.PrimaryKeyRelatedField(queryset=PostCategory.objects.all(), source='category',
-                                                    write_only=True, allow_null=True, required=False)
-
-    class Meta:
-        model = Post
-        fields = ['id', 'title', 'body', 'author', 'author_id', 'category', 'category_id', 'created_at']
-
-
-class PostImageSerializer(serializers.ModelSerializer):
+class PostImageInoutSerializer(serializers.ModelSerializer):
     asset = AssetSerializer(read_only=True)
-    asset_data = serializers.JSONField(write_only=True, required=False)
-    post = PostSerializer(read_only=True)
-    post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
+    image = serializers.ImageField(write_only=True, required=False)
 
     class Meta:
         model = PostImage
-        fields = ['id', 'post', 'post_id', 'asset', 'asset_data', 'caption']
+        fields = ['id', 'post', 'post_id', 'asset', 'image', 'caption']
 
     def validate(self, attrs):
-        asset_data = attrs.get('asset_data')
-        if asset_data:
-            if not any([asset_data.get('owner'), asset_data.get('file'), asset_data.get('image')]):
-                raise serializers.ValidationError({
-                    'asset_data': 'At least one of "owner", "file", or "image" must be provided for asset.'
-                })
-        else:
-            raise serializers.ValidationError({
-                'asset_data': 'This field is required to create an asset.'
-            })
-        return attrs
+        request = self.context.get('request')
+        now = timezone.now()
+        one_hour_ago = now - timedelta(minutes=60)
 
-    def create(self, validated_data):
-        asset_data = validated_data.pop('asset_data')
+        recent_images = PostImage.objects.filter(
+            post__isnull=True,
+            asset__owner=request.user,
+            created_at__lte=one_hour_ago
 
-        owner_id = asset_data.get('owner')
-        if owner_id:
-            try:
-                asset_data['owner'] = User.objects.get(id=owner_id)
-            except User.DoesNotExist:
-                raise serializers.ValidationError({'asset_data': 'Invalid owner ID.'})
+        )
+        if recent_images.count() >= 100:
+            raise serializers.ValidationError("You can only upload 100 images per hour.")
 
-        asset = Asset.objects.create(**asset_data)
+class PostImageOutputSerializer(serializers.ModelSerializer):
+    asset = AssetSerializer(read_only=True)
 
-        post_image = PostImage.objects.create(asset=asset, **validated_data)
-        return post_image
+    class Meta:
+        model = PostImage
+        fields = ['id', 'post', 'post_id', 'asset', 'caption']
+
+
+
+class PostInputSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    category = PostCategorySerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(queryset=PostCategory.objects.all(), source='category',
+                                                    write_only=True, allow_null=True, required=False)
+    images_id = serializers.ListSerializer(child=serializers.IntegerField(), write_only=True, required=False)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'body', 'author', 'author_id', 'category','images_id', 'category_id', 'created_at']
+
+class PostOutputSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    category = PostCategorySerializer(read_only=True)
+    images = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'body', 'author', 'author_id', 'category','images', 'category_id', 'created_at']
+
+    def __init__(self, *args,method='list', **kwargs):
+        self.method = method
+        super().__init__(*args, **kwargs)
+
+
+    def get_images(self, obj):
+        if self.method == 'list':
+            images = PostImage.objects.filter(post=obj).first()
+            return PostImageOutputSerializer(images).data
+
+        elif self.method == 'detail':
+            images = PostImage.objects.filter(post=obj)
+            return PostImageOutputSerializer(images, many=True).data
+
+
+
 
 
 class ParentCommentSerializer(serializers.ModelSerializer):
@@ -85,7 +104,7 @@ class ParentCommentSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    post = PostSerializer(read_only=True)
+    post = PostOutputSerializer(read_only=True)
     post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
     author = UserSerializer(read_only=True)
     author_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='author', write_only=True)
@@ -104,7 +123,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
-    post = PostSerializer(read_only=True)
+    post = PostOutputSerializer(read_only=True)
     post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
     author = UserSerializer(read_only=True)
     author_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='author', write_only=True)
@@ -127,7 +146,7 @@ class RatingSerializer(serializers.ModelSerializer):
 
 
 class FavoritePostSerializer(serializers.ModelSerializer):
-    post = PostSerializer(read_only=True)
+    post = PostOutputSerializer(read_only=True)
     post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
     user = UserSerializer(read_only=True)
     user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='user', write_only=True)

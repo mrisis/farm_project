@@ -34,7 +34,7 @@ class Post(BaseModel):
 
 
 class PostImage(BaseModel):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images', null=True, blank=True)
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='post_images')
     caption = models.CharField(max_length=255, blank=True, null=True)
 
