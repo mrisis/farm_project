@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost
+from .models import PostCategory, Post, PostImage, Comment, Rating, FavoritePost, PostAddress
 
 
 class PostCategoryAdmin(admin.ModelAdmin):
@@ -36,9 +36,15 @@ class FavoritePostAdmin(admin.ModelAdmin):
     search_fields = ['post','post_id', 'user', 'user_id']
     list_filter = ['post', 'user']
 
+class PostAddressAdmin(admin.ModelAdmin):
+    list_display = ['id','post','post_id', 'province','province_id', 'city', 'city_id']
+    search_fields = ['post','post_id', 'province', 'province_id', 'city', 'city_id']
+    list_filter = ['post', 'province', 'city']
+
 admin.site.register(PostCategory, PostCategoryAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(PostImage, PostImageAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Rating, RatingAdmin)
 admin.site.register(FavoritePost, FavoritePostAdmin)
+admin.site.register(PostAddress, PostAddressAdmin)

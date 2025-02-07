@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from core.models import BaseModel
 from apps.accounts.models import User
 from apps.files.models import Asset
+from apps.locations.models import Province, City
 
 
 
@@ -41,6 +42,17 @@ class PostImage(BaseModel):
     def __str__(self):
         return f'Image for {self.post.title} by ID {self.post.id}'
 
+class PostAddress(BaseModel):
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='address', null=True, blank=True)
+    lat = models.DecimalField(max_digits=10, decimal_places = 10 , null=True, blank=True)
+    lng = models.DecimalField(max_digits=10, decimal_places = 10, null=True, blank=True)
+    full_address = models.TextField(null=True, blank=True)
+    postal_code = models.CharField(max_length=10, null=True, blank=True)
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True,related_name='post_addresses')
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, related_name='post_addresses')
+
+    def __str__(self):
+        return f'Address for {self.post.title} by ID {self.post.id}'
 
 
 class Comment(BaseModel):
