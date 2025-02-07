@@ -12,7 +12,7 @@ urlpatterns = [
 
             #posts urls
             path('create-post/', views_user.PostCreateUserApiView.as_view(), name='create-post'),
-            path('list-posts/', views_user.PostLisUserApiView.as_view(), name='list-posts'),
+            path('list-posts/', views_user.PostListUserApiView.as_view(), name='list-posts'),
             path('post/<int:pk>/detail/', views_user.PostDetailUserApiView.as_view(), name='post-detail'),
             path('post/<int:pk>/update/', views_user.PostUpdateUserApiView.as_view(), name='post-update'),
             path('post/<int:pk>/delete/', views_user.PostDeleteUserApiView.as_view(), name='post-delete'),
