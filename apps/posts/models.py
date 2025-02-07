@@ -6,7 +6,6 @@ from apps.files.models import Asset
 from apps.locations.models import Province, City
 
 
-
 class PostCategory(BaseModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, blank=True)
@@ -23,12 +22,20 @@ class PostCategory(BaseModel):
         super().save(*args, **kwargs)
 
 
-
 class Post(BaseModel):
+    class UnitPriceChoices(models.TextChoices):
+        TOMAN = 'Toman', 'IRT'
+        RIAL = 'Rial', 'IRR'
+
     title = models.CharField(max_length=255)
     body = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     category = models.ForeignKey(PostCategory, on_delete=models.SET_NULL, blank=True, null=True, related_name='posts')
+    unit_price = models.CharField(max_length=10, choices=UnitPriceChoices.choices, default=UnitPriceChoices.TOMAN,
+                                  null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    is_visible_mobile = models.BooleanField(default=False)
+    is_chat_avaliable = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.title} by {self.author}'
@@ -40,15 +47,17 @@ class PostImage(BaseModel):
     caption = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f'Image for {self.post.title} by ID {self.post.id}'
+        return f'Image for by ID {self.asset_id} '
+
 
 class PostAddress(BaseModel):
     post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='address', null=True, blank=True)
-    lat = models.DecimalField(max_digits=10, decimal_places = 10 , null=True, blank=True)
-    lng = models.DecimalField(max_digits=10, decimal_places = 10, null=True, blank=True)
+    lat = models.DecimalField(max_digits=10, decimal_places=10, null=True, blank=True)
+    lng = models.DecimalField(max_digits=10, decimal_places=10, null=True, blank=True)
     full_address = models.TextField(null=True, blank=True)
     postal_code = models.CharField(max_length=10, null=True, blank=True)
-    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True,related_name='post_addresses')
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True,
+                                 related_name='post_addresses')
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, related_name='post_addresses')
 
     def __str__(self):
@@ -64,12 +73,12 @@ class Comment(BaseModel):
     def __str__(self):
         return f'Comment by {self.author} on {self.post.id}'
 
+
 class Rating(BaseModel):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='ratings')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings')
     score = models.PositiveSmallIntegerField(
-        choices=[(i , i) for i in range(6) ])
-
+        choices=[(i, i) for i in range(6)])
 
     def __str__(self):
         return f"{self.score} stars by {self.author} for {self.post.id}"
