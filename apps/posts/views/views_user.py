@@ -14,17 +14,19 @@ from rest_framework.views import APIView
 
 from django.db.models import Count, Avg
 from django_filters.rest_framework import DjangoFilterBackend
-from apps.posts.filters import PostFilter
+from apps.posts import filters as post_filters
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 class PostCategoryListApiView(GenericAPIView):
     serializer_class = PostCategoryListUserSerializer
     pagination_class = CustomPageNumberPagination
-
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = post_filters.PostCategoryFilterSet
+    
     def get(self, request):
-        categories = PostCategory.objects.filter(parent__isnull=True)
-        serializer = self.get_serializer(categories, many=True)
+        categorie_qs = self.filter_queryset(PostCategory.objects.all())
+        serializer = self.get_serializer(categorie_qs, many=True)
         return Response(serializer.data)
 
 
@@ -32,7 +34,7 @@ class PostListUserApiView(GenericAPIView):
     serializer_class = PostListUserSerializer
     pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = PostFilter
+    filterset_class = post_filters.PostFilter
     search_fields = ['title', 'category__name']
     ordering_fields = ['price',]
     ordering = ['-created_at']
