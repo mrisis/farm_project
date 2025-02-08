@@ -25,6 +25,7 @@ class EnvSettings(BaseSettings):
     db_host: str
     db_port: str
     kavenegar_api_key : str
+    allowed_hosts: list[str] = ["*"]
     # add fields you need
     model_config = SettingsConfigDict(
         env_file='.env'
@@ -46,7 +47,7 @@ SECRET_KEY = env.secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.debug
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.allowed_hosts
 
 
 # Application definition
