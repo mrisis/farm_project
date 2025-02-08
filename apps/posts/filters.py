@@ -20,16 +20,13 @@ class PostFilter(django_filters.FilterSet):
 
 
 class PostCategoryFilterSet(django_filters.FilterSet):
-    just_children = django_filters.BooleanFilter(method="filter_just_children")
+    parent = django_filters.BooleanFilter(method="filter_parent")
 
     class Meta:
         model = post_models.PostCategory
-        fields = [
-        ]
+        fields = []
 
-    
-    def filter_just_children(self, qs, name, value):
-        print(value)
-        qs.filter(parent__isnull=not(value))
-        return qs
-            
+    def filter_parent(self, qs, name, value):
+        if value:
+            return qs.filter(parent__isnull=True)
+        return qs.filter(parent__isnull=False)
