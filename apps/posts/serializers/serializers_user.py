@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.posts.models import PostCategory, PostImage, Post, PostAddress, Rating, Comment
+from apps.posts.models import PostCategory, PostImage, Post, PostAddress, Rating, Comment, FavoritePost
 from apps.files.serializers import AssetSerializer
 from datetime import timedelta
 from django.utils import timezone
@@ -184,3 +184,9 @@ class PostCommentRateCreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'text','post', 'parent', 'score', 'created_at']
+
+
+class PostAddToFavoriteUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoritePost
+        fields = ['id', 'post']

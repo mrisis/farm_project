@@ -1,11 +1,9 @@
-
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-
-from apps.posts.models import PostCategory, Post, PostImage, PostAddress, Rating, Comment
+from apps.posts.models import PostCategory, Post, PostImage, PostAddress, Rating, Comment, FavoritePost
 from apps.files.models import Asset
 from apps.posts.serializers.serializers_user import PostCategoryListUserSerializer, PostListUserSerializer, PostCreateUpdateUserSerializer, \
-    PostImageCreateUserSerializer, PostCommentRateUserSerializer, PostCommentRateCreateUserSerializer
+    PostImageCreateUserSerializer, PostCommentRateUserSerializer, PostCommentRateCreateUserSerializer, PostAddToFavoriteUserSerializer
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -195,3 +193,21 @@ class PostCommentRateCreateUserApiView(GenericAPIView):
         )
 
         return Response({"detail": "Comment and Rating Created Successfully"}, status=status.HTTP_201_CREATED)
+
+
+class PostAddToFavoriteUserApiView(GenericAPIView):
+    serializer_class = PostAddToFavoriteUserSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        post = serializer.validated_data.get('post')
+        favorite_post = FavoritePost(
+            post=post,
+            user=request.user,
+        )
+        favorite_post.save()
+
+        return Response({"detail": "Post Added to Favorites Successfully"}, status=status.HTTP_201_CREATED)
