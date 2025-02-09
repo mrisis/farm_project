@@ -26,6 +26,8 @@ class EnvSettings(BaseSettings):
     db_port: str
     kavenegar_api_key : str
     allowed_hosts: list[str] = ["*"]
+    media_root: str = ""
+    static_root: str = ""
     # add fields you need
     model_config = SettingsConfigDict(
         env_file='.env'
@@ -159,6 +161,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
+MEDIA_ROOT = env.media_root
+STATIC_ROOT = env.static_root
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
