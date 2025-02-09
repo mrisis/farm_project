@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, OtpCode, RoleCategory, Role
+from .models import User, OtpCode, RoleCategory, Role, UserAddress
 from .forms import UserCreationForm,UserchangeForm
 
 class UserAdmin(BaseUserAdmin):
@@ -29,6 +29,11 @@ class UserAdmin(BaseUserAdmin):
             form.base_fields['is_superuser'].disabled=True
         return form
 
+class UserAddressAdmin(admin.ModelAdmin):
+    list_display = ['id','user','province','city','full_address','postal_code']
+    search_fields = ['user','province','city','full_address','postal_code']
+    list_filter = ('province','city', 'user')
+
 
 class OtpCodeAdmin(admin.ModelAdmin):
     list_display = ['id','mobile_number','otp_code','is_verified']
@@ -52,3 +57,4 @@ admin.site.register(User,UserAdmin)
 admin.site.register(OtpCode,OtpCodeAdmin)
 admin.site.register(RoleCategory,RoleCategoryAdmin)
 admin.site.register(Role,RoleAdmin)
+admin.site.register(UserAddress, UserAddressAdmin)

@@ -5,6 +5,7 @@ from django.utils.timezone import now
 from datetime import timedelta
 from core.models import BaseUserModel, BaseModel
 from core.utils import generic_funcs
+from apps.locations.models import Province, City
 
 
 class User(AbstractBaseUser, BaseUserModel, PermissionsMixin):
@@ -48,6 +49,17 @@ class User(AbstractBaseUser, BaseUserModel, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
+class UserAddress(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, related_name='addresses')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='addresses')
+    lat = models.DecimalField(max_digits=10, decimal_places=10, null=True, blank=True)
+    lng = models.DecimalField(max_digits=10, decimal_places=10, null=True, blank=True)
+    full_address = models.TextField(null=True, blank=True)
+    postal_code = models.CharField(max_length=10, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.user.mobile_number} - {self.full_address}'
 
 
 class OtpCode(BaseModel):
