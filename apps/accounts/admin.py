@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, OtpCode, RoleCategory, Role, UserAddress
+from .models import User, OtpCode, RoleCategory, Role, UserAddress, UserRole
 from .forms import UserCreationForm,UserchangeForm
 
 class UserAdmin(BaseUserAdmin):
@@ -51,6 +51,11 @@ class RoleAdmin(admin.ModelAdmin):
     search_fields = ['name','description', 'category',]
     list_filter = ('name', 'category')
 
+class UserRoleAdmin(admin.ModelAdmin):
+    list_display = ['id','user','role']
+    search_fields = ['user__mobile_number','role__name']
+    list_filter = ('user', 'role', 'user__mobile_number')
+
 
 
 admin.site.register(User,UserAdmin)
@@ -58,3 +63,4 @@ admin.site.register(OtpCode,OtpCodeAdmin)
 admin.site.register(RoleCategory,RoleCategoryAdmin)
 admin.site.register(Role,RoleAdmin)
 admin.site.register(UserAddress, UserAddressAdmin)
+admin.site.register(UserRole, UserRoleAdmin)
