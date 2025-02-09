@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import OtpCode, User, RoleCategory, Role
+from apps.accounts.models import OtpCode, User, RoleCategory, Role
+
 
 class SendOtpCodeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,22 +24,14 @@ class UserSignupSerializer(serializers.ModelSerializer):
         }
 
 
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id','first_name','last_name', 'mobile_number', 'email','gender', 'is_active', 'created_at', 'updated_at',]
-
-
 class RoleCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = RoleCategory
         fields = ['id','name', 'description',]
 
+
 class RoleSerializer(serializers.ModelSerializer):
     category = RoleCategorySerializer(read_only=True)
-    category_id = serializers.PrimaryKeyRelatedField(queryset=RoleCategory.objects.all(), source='category', write_only=True)
     class Meta:
         model = Role
-        fields = ['id','name', 'description', 'category', 'category_id',]
+        fields = ['id','name', 'description', 'category',]

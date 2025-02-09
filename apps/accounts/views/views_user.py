@@ -1,14 +1,16 @@
-from django.template.defaultfilters import first
 from rest_framework.generics import GenericAPIView
-
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, OtpCode, RoleCategory, Role
-from .serializers import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer, RoleSerializer
+from apps.accounts.models import User, OtpCode, RoleCategory, Role
+from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer, RoleSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
+from apps.accounts.filters import RoleFilter
+from core.utils.C_drf.C_paginations import CustomPageNumberPagination
+
+
 
 class SendOtpApiView(GenericAPIView):
     serializer_class = SendOtpCodeSerializer
@@ -71,86 +73,24 @@ class UserSignupApiView(GenericAPIView):
         return Response({'message': 'UserCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
 
 
-class RoleCategoryCreateApiView(GenericAPIView):
-    serializer_class = RoleCategorySerializer
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class RoleCategoryDetailApiView(GenericAPIView):
-    serializer_class = RoleCategorySerializer
-    def get(self, request, pk):
-        role_category = get_object_or_404(RoleCategory, pk=pk)
-        serializer = self.get_serializer(role_category)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 class RoleCategoryListApiView(GenericAPIView):
+    pagination_class = CustomPageNumberPagination
     serializer_class = RoleCategorySerializer
+
     def get(self, request):
         role_categories = RoleCategory.objects.all()
         serializer = self.get_serializer(role_categories, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RoleCategoryUpdateApiView(GenericAPIView):
-    serializer_class = RoleCategorySerializer
-    def put(self, request, pk):
-        role_category = get_object_or_404(RoleCategory, pk=pk)
-        serializer = self.get_serializer(role_category, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class RoleCategoryDeleteApiView(APIView):
-    def delete(self, request, pk):
-        role_category = get_object_or_404(RoleCategory, pk=pk)
-        role_category.delete()
-        return Response({'message': 'RoleCategoryDeletedSuccessfully'}, status=status.HTTP_204_NO_CONTENT)
-
-
-
-class RoleCreateApiView(GenericAPIView):
-    serializer_class = RoleSerializer
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class RoleDetailApiView(GenericAPIView):
-    serializer_class = RoleSerializer
-    def get(self, request, pk):
-        role = get_object_or_404(Role, pk=pk)
-        serializer = self.get_serializer(role)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class RoleListApiView(GenericAPIView):
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RoleFilter
+
     serializer_class = RoleSerializer
     def get(self, request):
-        roles = Role.objects.all()
+        roles = self.filter_queryset(Role.objects.all())
         serializer = self.get_serializer(roles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class RoleUpdateApiView(GenericAPIView):
-    serializer_class = RoleSerializer
-    def put(self, request, pk):
-        role = get_object_or_404(Role, pk=pk)
-        serializer = self.get_serializer(role, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class RoleDeleteApiView(APIView):
-    def delete(self, request, pk):
-        role = get_object_or_404(Role, pk=pk)
-        role.delete()
-        return Response({'message': 'RoleDeletedSuccessfully'}, status=status.HTTP_204_NO_CONTENT)
