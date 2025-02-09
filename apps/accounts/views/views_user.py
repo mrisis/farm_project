@@ -1,9 +1,10 @@
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from apps.accounts.models import User, OtpCode, RoleCategory, Role
-from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer, RoleSerializer
+from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress
+from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -93,4 +94,15 @@ class RoleListApiView(GenericAPIView):
     def get(self, request):
         roles = self.filter_queryset(Role.objects.all())
         serializer = self.get_serializer(roles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserAddressListApiView(GenericAPIView):
+    pagination_class = CustomPageNumberPagination
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserAddressListSerializer
+
+    def get(self, request):
+        user_addresses = UserAddress.objects.filter(user=request.user)
+        serializer = self.get_serializer(user_addresses, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -19,6 +19,10 @@ urlpatterns = [
             # role urls
 
             path('role/list/', views_user.RoleListApiView.as_view(), name='role_list'),
+
+            # user address urls
+
+            path('user-address/list/', views_user.UserAddressListApiView.as_view(), name='user_address_list'),
         ]))
     ]))
 ]
