@@ -23,6 +23,10 @@ urlpatterns = [
             # user address urls
 
             path('user-address/list/', views_user.UserAddressListApiView.as_view(), name='user_address_list'),
+
+            # user roles urls
+
+            path('user-roles/list/', views_user.UserRolesListApiView.as_view(), name='user_roles_list'),
         ]))
     ]))
 ]

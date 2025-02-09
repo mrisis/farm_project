@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.accounts.models import OtpCode, User, RoleCategory, Role, UserAddress
+from apps.accounts.models import OtpCode, User, RoleCategory, Role, UserAddress, UserRole
 from apps.locations.serializers.serializers_user import ProvinceSerializer, CitySerializer
 
 
@@ -46,3 +46,15 @@ class UserAddressListSerializer(serializers.ModelSerializer):
         model = UserAddress
         fields = ['id', 'province', 'city', 'full_address', 'postal_code', 'lat', 'lng',]
 
+class RoleNestedSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Role
+        fields = ['id', 'name',
+                  ]
+class UserRolesListSerializer(serializers.ModelSerializer):
+    role = RoleNestedSerializer(read_only=True)
+
+    class Meta:
+        model = UserRole
+        fields = ['id', 'role',]
