@@ -38,16 +38,16 @@ class PostListUserApiView(GenericAPIView):
     ordering = ['-created_at']
 
     def get(self, request):
-        posts = self.filter_queryset(Post.objects.all())
-        serializer = self.get_serializer(posts, many=True, method='list', only_fields={
+        posts_qs = self.filter_queryset(Post.objects.all())
+        page = self.paginate_queryset(posts_qs)
+        serializer = self.get_serializer(page, many=True, method='list', only_fields={
             'id',
             'title',
             'images',
             'address',
             'created_at',
         })
-        return Response(serializer.data)
-
+        return self.get_paginated_response(serializer.data)
 
 class PostDetailUserApiView(GenericAPIView):
     serializer_class = PostListUserSerializer
