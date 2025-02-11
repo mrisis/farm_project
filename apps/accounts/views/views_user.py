@@ -34,7 +34,7 @@ class SendOtpApiView(GenericAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         user.create_and_send_otp()
-        return Response({'message': 'OTP_CodeSentSuccessfully'}, status=status.HTTP_200_OK)
+        return Response({'message': 'OTP_CodeSentSuccessfully', 'remaining_time': 120}, status=status.HTTP_200_OK)
 
 
 class VerifyOtpApiView(GenericAPIView):
