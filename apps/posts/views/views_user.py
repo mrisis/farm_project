@@ -202,7 +202,7 @@ class PostCommentRateCreateUserApiView(GenericAPIView):
         return Response({"detail": "Comment and Rating Created Successfully"}, status=status.HTTP_201_CREATED)
 
 
-class PostAddToFavoriteUserApiView(GenericAPIView):
+class PostAddOrRemoveToFavoriteUserApiView(GenericAPIView):
     serializer_class = PostAddToFavoriteUserSerializer
     permission_classes = [IsAuthenticated, ]
 
@@ -211,10 +211,15 @@ class PostAddToFavoriteUserApiView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         post = serializer.validated_data.get('post')
-        favorite_post = FavoritePost(
-            post=post,
-            user=request.user,
-        )
-        favorite_post.save()
+        favorit_qs = FavoritePost.objects.filter(post=post, user=request.user)
+        if favorit_qs.exists():
+            favorit_qs.delete()
+            return Response({"detail": "False"}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            favorite_post = FavoritePost(
+                post=post,
+                user=request.user,
+            )
+            favorite_post.save()
 
-        return Response({"detail": "Post Added to Favorites Successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"detail": "True"}, status=status.HTTP_201_CREATED)
