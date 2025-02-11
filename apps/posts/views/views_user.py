@@ -43,6 +43,7 @@ class PostListUserApiView(GenericAPIView):
         serializer = self.get_serializer(page, many=True, method='list', only_fields={
             'id',
             'title',
+            'price',
             'images',
             'address',
             'created_at',
