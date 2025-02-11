@@ -2,8 +2,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from apps.posts.models import PostCategory, Post, PostImage, PostAddress, Rating, Comment, FavoritePost
 from apps.files.models import Asset
-from apps.posts.serializers.serializers_user import PostCategoryListUserSerializer, PostListUserSerializer, PostCreateUpdateUserSerializer, \
-    PostImageCreateUserSerializer, PostCommentRateUserSerializer, PostCommentRateCreateUserSerializer, PostAddToFavoriteUserSerializer
+from apps.posts.serializers.serializers_user import PostCategoryListUserSerializer, PostListUserSerializer, \
+    PostCreateUpdateUserSerializer, \
+    PostImageCreateUserSerializer, PostCommentRateUserSerializer, PostCommentRateCreateUserSerializer, \
+    PostAddToFavoriteUserSerializer
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +23,7 @@ class PostCategoryListApiView(GenericAPIView):
     pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = post_filters.PostCategoryFilterSet
-    
+
     def get(self, request):
         categorie_qs = self.filter_queryset(PostCategory.objects.all())
         serializer = self.get_serializer(categorie_qs, many=True)
@@ -34,7 +36,7 @@ class PostListUserApiView(GenericAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = post_filters.PostFilter
     search_fields = ['title', 'category__name']
-    ordering_fields = ['price',]
+    ordering_fields = ['price', ]
     ordering = ['-created_at']
 
     def get(self, request):
@@ -49,6 +51,7 @@ class PostListUserApiView(GenericAPIView):
         })
         return self.get_paginated_response(serializer.data)
 
+
 class PostDetailUserApiView(GenericAPIView):
     serializer_class = PostListUserSerializer
 
@@ -56,8 +59,12 @@ class PostDetailUserApiView(GenericAPIView):
         post = get_object_or_404(Post, pk=pk)
         ratings_post = post.ratings.all().aggregate(Avg('score'))
         ratings_count = post.ratings.all().aggregate(value=Count('id'))
-        serializer = self.get_serializer(post, method='detail',
-                                         context={'ratings_post': ratings_post, 'ratings_count': ratings_count})
+        context = self.get_serializer_context()
+        context.update({
+            'ratings_post': ratings_post,
+            'ratings_count': ratings_count
+        })
+        serializer = self.get_serializer(post, method='detail', context=context)
         return Response(serializer.data)
 
 
