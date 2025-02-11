@@ -27,6 +27,8 @@ urlpatterns = [
 
             # favorite post urls
             path('favorite-post/add-or-remove/', views_user.PostAddOrRemoveToFavoriteUserApiView.as_view(), name='add-to-favorite'),
+            path('favorite-post/list/', views_user.MyFavoritePostListUserApiView.as_view(), name='favorite-post-list'),
+            path('favorite-post/<int:pk>/detail/', views_user.MyFavoritePostDetailUserApiView.as_view(), name='favorite-post-detail'),
 
 
 
