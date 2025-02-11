@@ -74,10 +74,12 @@ class PostListUserSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField(read_only=True)
     address = PostAddressNestedSerializer(read_only=True)
     ratings = serializers.SerializerMethodField(read_only=True)
+    is_favorite = serializers.SerializerMethodField(read_only=True)
+
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'body', 'author', 'category', 'price', 'address', 'images', 'ratings', 'created_at']
+        fields = ['id', 'title', 'body', 'author','is_favorite', 'category', 'price', 'address', 'images', 'ratings', 'created_at']
 
     def __init__(self, *args, method='list', **kwargs):
         fields = kwargs.pop('only_fields', None)
@@ -112,6 +114,12 @@ class PostListUserSerializer(serializers.ModelSerializer):
             'avg_score': ratings_score,
             'vote_counts': ratings_count.get('value', None)
         }
+
+    def get_is_favorite(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.favorites.filter(user=request.user).exists()
+        return None
 
 
 class PostCreateUpdateUserSerializer(serializers.ModelSerializer):

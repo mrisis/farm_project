@@ -82,6 +82,17 @@ class OtpCode(BaseModel):
         self.save()
         return True
 
+    @classmethod
+    def can_send_new_otp(cls, mobile_number, wait_minutes=2):
+
+        last_otp = cls.objects.filter(mobile_number=mobile_number).order_by('-created_at').first()
+        if last_otp:
+            valid_until = last_otp.created_at + timedelta(minutes=wait_minutes)
+            if now() < valid_until:
+                remaining_time = int((valid_until - now()).total_seconds())
+                return False, remaining_time
+        return True, 0
+
 
 class RoleCategory(BaseModel):
     name = models.CharField(max_length=255)

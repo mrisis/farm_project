@@ -2,8 +2,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from apps.posts.models import PostCategory, Post, PostImage, PostAddress, Rating, Comment, FavoritePost
 from apps.files.models import Asset
-from apps.posts.serializers.serializers_user import PostCategoryListUserSerializer, PostListUserSerializer, PostCreateUpdateUserSerializer, \
-    PostImageCreateUserSerializer, PostCommentRateUserSerializer, PostCommentRateCreateUserSerializer, PostAddToFavoriteUserSerializer
+from apps.posts.serializers.serializers_user import PostCategoryListUserSerializer, PostListUserSerializer, \
+    PostCreateUpdateUserSerializer, \
+    PostImageCreateUserSerializer, PostCommentRateUserSerializer, PostCommentRateCreateUserSerializer, \
+    PostAddToFavoriteUserSerializer
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +23,7 @@ class PostCategoryListApiView(GenericAPIView):
     pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = post_filters.PostCategoryFilterSet
-    
+
     def get(self, request):
         categorie_qs = self.filter_queryset(PostCategory.objects.all())
         serializer = self.get_serializer(categorie_qs, many=True)
@@ -34,7 +36,7 @@ class PostListUserApiView(GenericAPIView):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = post_filters.PostFilter
     search_fields = ['title', 'category__name']
-    ordering_fields = ['price',]
+    ordering_fields = ['price', ]
     ordering = ['-created_at']
 
     def get(self, request):
@@ -50,6 +52,7 @@ class PostListUserApiView(GenericAPIView):
         })
         return self.get_paginated_response(serializer.data)
 
+
 class PostDetailUserApiView(GenericAPIView):
     serializer_class = PostListUserSerializer
 
@@ -57,8 +60,12 @@ class PostDetailUserApiView(GenericAPIView):
         post = get_object_or_404(Post, pk=pk)
         ratings_post = post.ratings.all().aggregate(Avg('score'))
         ratings_count = post.ratings.all().aggregate(value=Count('id'))
-        serializer = self.get_serializer(post, method='detail',
-                                         context={'ratings_post': ratings_post, 'ratings_count': ratings_count})
+        context = self.get_serializer_context()
+        context.update({
+            'ratings_post': ratings_post,
+            'ratings_count': ratings_count
+        })
+        serializer = self.get_serializer(post, method='detail', context=context)
         return Response(serializer.data)
 
 
@@ -196,7 +203,7 @@ class PostCommentRateCreateUserApiView(GenericAPIView):
         return Response({"detail": "Comment and Rating Created Successfully"}, status=status.HTTP_201_CREATED)
 
 
-class PostAddToFavoriteUserApiView(GenericAPIView):
+class PostAddOrRemoveToFavoriteUserApiView(GenericAPIView):
     serializer_class = PostAddToFavoriteUserSerializer
     permission_classes = [IsAuthenticated, ]
 
@@ -205,10 +212,60 @@ class PostAddToFavoriteUserApiView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         post = serializer.validated_data.get('post')
-        favorite_post = FavoritePost(
-            post=post,
-            user=request.user,
-        )
-        favorite_post.save()
+        favorit_qs = FavoritePost.objects.filter(post=post, user=request.user)
+        if favorit_qs.exists():
+            favorit_qs.delete()
+            return Response({"detail": "False"}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            favorite_post = FavoritePost(
+                post=post,
+                user=request.user,
+            )
+            favorite_post.save()
 
-        return Response({"detail": "Post Added to Favorites Successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"detail": "True"}, status=status.HTTP_201_CREATED)
+
+
+class MyFavoritePostListUserApiView(GenericAPIView):
+    serializer_class = PostListUserSerializer
+    pagination_class = CustomPageNumberPagination
+    permission_classes = [IsAuthenticated,]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = post_filters.PostFilter
+    search_fields = ['title', 'category__name']
+    ordering_fields = ['price', ]
+    ordering = ['-created_at']
+
+    def get(self, request):
+        posts_qs = self.filter_queryset(Post.objects.filter(favorites__user=request.user))
+        page = self.paginate_queryset(posts_qs)
+        serializer = self.get_serializer(page, many=True, method='list', only_fields={
+            'id',
+            'title',
+            'images',
+            'address',
+            'created_at',
+        })
+        return self.get_paginated_response(serializer.data)
+
+
+
+class MyFavoritePostDetailUserApiView(GenericAPIView):
+    serializer_class = PostListUserSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, pk=pk)
+        ratings_score = post.ratings.all().aggregate(Avg('score'))
+        ratings_count = post.ratings.all().aggregate(value=Count('id'))
+        context = self.get_serializer_context()
+        context.update({
+            'ratings_score': ratings_score,
+            'ratings_count': ratings_count
+        })
+        serializer = self.get_serializer(post, method='detail', context=context)
+        return Response(serializer.data)
+
+
+
+
