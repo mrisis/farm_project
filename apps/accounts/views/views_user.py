@@ -25,6 +25,14 @@ class SendOtpApiView(GenericAPIView):
             user = get_object_or_404(User, mobile_number=mobile_number)
         except Http404:
             return Response({"message": "user dose not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        can_send, remaining_time = OtpCode.can_send_new_otp(mobile_number)
+        if not can_send:
+            return Response({
+                'message': 'OTP already sent. Please wait before requesting again.',
+                'remaining_time': remaining_time,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         user.create_and_send_otp()
         return Response({'message': 'OTP_CodeSentSuccessfully'}, status=status.HTTP_200_OK)
 
