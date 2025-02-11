@@ -91,7 +91,7 @@ class OtpCode(BaseModel):
             if now() < valid_until:
                 remaining_time = int((valid_until - now()).total_seconds())
                 return False, remaining_time
-        return True, 0
+        return True, timedelta(minutes=wait_minutes).total_seconds()
 
 
 class RoleCategory(BaseModel):

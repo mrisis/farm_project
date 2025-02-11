@@ -29,6 +29,7 @@ class SendOtpApiView(GenericAPIView):
         can_send, remaining_time = OtpCode.can_send_new_otp(mobile_number)
         if not can_send:
             return Response({
+                "code_error": "otp_already_sent",
                 'message': 'OTP already sent. Please wait before requesting again.',
                 'remaining_time': remaining_time,
             }, status=status.HTTP_400_BAD_REQUEST)
