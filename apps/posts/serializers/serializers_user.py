@@ -102,10 +102,16 @@ class PostListUserSerializer(serializers.ModelSerializer):
             return PostImageListUserSerializer(images, many=True).data
 
     def get_author(self, obj):
+        if obj.is_visible_mobile:
 
-        return {
-            'mobile_number': obj.author.mobile_number
-        }
+            return {
+                'mobile_number': obj.author.mobile_number
+            }
+        else:
+            return {
+                'first_name': obj.author.first_name,
+                'last_name': obj.author.last_name
+            }
 
     def get_ratings(self, obj):
         ratings_score = self.context.get('ratings_score')
@@ -120,6 +126,7 @@ class PostListUserSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.favorites.filter(user=request.user).exists()
         return None
+
 
 
 class PostCreateUpdateUserSerializer(serializers.ModelSerializer):
