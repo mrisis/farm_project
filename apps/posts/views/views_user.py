@@ -255,7 +255,7 @@ class MyFavoritePostDetailUserApiView(GenericAPIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request, pk, *args, **kwargs):
-        post = get_object_or_404(Post, pk=pk)
+        post = get_object_or_404(Post, pk=pk, favorites__user=request.user)
         ratings_score = post.ratings.all().aggregate(Avg('score'))
         ratings_count = post.ratings.all().aggregate(value=Count('id'))
         context = self.get_serializer_context()
