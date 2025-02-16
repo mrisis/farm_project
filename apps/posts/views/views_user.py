@@ -219,7 +219,7 @@ class PostAddOrRemoveToFavoriteUserApiView(GenericAPIView):
         favorit_qs = FavoritePost.objects.filter(post=post, user=request.user)
         if favorit_qs.exists():
             favorit_qs.delete()
-            return Response({"detail": "False"}, status=status.HTTP_200_OK)
+            return Response({"detail": False}, status=status.HTTP_200_OK)
         else:
             favorite_post = FavoritePost(
                 post=post,
@@ -227,7 +227,7 @@ class PostAddOrRemoveToFavoriteUserApiView(GenericAPIView):
             )
             favorite_post.save()
 
-            return Response({"detail": "True"}, status=status.HTTP_201_CREATED)
+            return Response({"detail": True}, status=status.HTTP_201_CREATED)
 
 
 class MyFavoritePostListUserApiView(GenericAPIView):
