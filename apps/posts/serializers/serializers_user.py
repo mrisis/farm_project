@@ -5,6 +5,8 @@ from datetime import timedelta
 from django.utils import timezone
 from apps.locations.models import Province, City
 import jdatetime
+from django.utils.timezone import now
+
 
 class SubcategoriesNestedSerializer(serializers.ModelSerializer):
     class Meta:
@@ -76,11 +78,12 @@ class PostListUserSerializer(serializers.ModelSerializer):
     address = PostAddressNestedSerializer(read_only=True)
     ratings = serializers.SerializerMethodField(read_only=True)
     is_favorite = serializers.SerializerMethodField(read_only=True)
+    total_seconds = serializers.SerializerMethodField(read_only=True)
 
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'body', 'author','is_favorite', 'category', 'price', 'address', 'images', 'ratings', 'created_at']
+        fields = ['id', 'title', 'body', 'author','is_favorite', 'category', 'price', 'address', 'images', 'ratings', 'created_at', 'total_seconds']
 
     def __init__(self, *args, method='list', **kwargs):
         fields = kwargs.pop('only_fields', None)
@@ -127,6 +130,9 @@ class PostListUserSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.favorites.filter(user=request.user).exists()
         return None
+
+    def get_total_seconds(self, obj):
+        return int((now() - obj.created_at).total_seconds())
 
 
 
