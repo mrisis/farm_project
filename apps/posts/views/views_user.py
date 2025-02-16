@@ -316,13 +316,13 @@ class RatingCheckUserApiView(GenericAPIView):
     serializer_class = RatingCheckSerializer
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         post = serializer.validated_data.get('post')
         rating = Rating.objects.filter(post=post, author=request.user).first()
         if rating:
-            return Response({"has_rated": "True"}, status=status.HTTP_200_OK)
+            return Response({"has_rated": True}, status=status.HTTP_200_OK)
         else:
-            return Response({"has_rated": "False"}, status=status.HTTP_200_OK)
+            return Response({"has_rated": False}, status=status.HTTP_200_OK)
 
