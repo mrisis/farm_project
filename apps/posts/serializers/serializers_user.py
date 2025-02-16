@@ -4,6 +4,7 @@ from apps.files.serializers import AssetSerializer
 from datetime import timedelta
 from django.utils import timezone
 from apps.locations.models import Province, City
+import jdatetime
 
 class SubcategoriesNestedSerializer(serializers.ModelSerializer):
     class Meta:
@@ -174,10 +175,11 @@ class PostImageCreateUserSerializer(serializers.ModelSerializer):
 class PostCommentRateUserSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
+    created_at_shamsi = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'text', 'author', 'parent', 'rating', 'created_at']
+        fields = ['id', 'text', 'author', 'parent', 'rating', 'created_at', 'created_at_shamsi']
 
     def get_rating(self, obj):
         post_id = obj.post.id
@@ -192,6 +194,11 @@ class PostCommentRateUserSerializer(serializers.ModelSerializer):
             'first_name': obj.author.first_name,
             'last_name': obj.author.last_name,
         }
+
+    def get_created_at_shamsi(self, obj):
+        if obj.created_at:
+            shamsi_date = jdatetime.datetime.fromgregorian(datetime=obj.created_at)
+            return shamsi_date.strftime("%Y-%m-%d")
 
 
 class PostCommentRateCreateUserSerializer(serializers.ModelSerializer):
