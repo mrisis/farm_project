@@ -58,11 +58,11 @@ class PostDetailUserApiView(GenericAPIView):
 
     def get(self, request, pk, *args, **kwargs):
         post = get_object_or_404(Post, pk=pk)
-        ratings_post = post.ratings.all().aggregate(Avg('score'))
+        ratings_score = post.ratings.all().aggregate(Avg('score'))
         ratings_count = post.ratings.all().aggregate(value=Count('id'))
         context = self.get_serializer_context()
         context.update({
-            'ratings_post': ratings_post,
+            'ratings_score': ratings_score,
             'ratings_count': ratings_count
         })
         serializer = self.get_serializer(post, method='detail', context=context)
