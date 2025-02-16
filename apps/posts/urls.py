@@ -26,6 +26,7 @@ urlpatterns = [
 
             path('create-comment-rate/', views_user.PostCommentRateCreateUserApiView.as_view(), name='create-comment'),
             path('comments/rates/<int:post_id>/list/', views_user.PostCommentRateListUserApiView.as_view(), name='comment-update'),
+            path('rating-check/', views_user.RatingCheckUserApiView.as_view(), name='rating-check'),
 
             # favorite post urls
             path('favorite-post/add-or-remove/', views_user.PostAddOrRemoveToFavoriteUserApiView.as_view(), name='add-to-favorite'),

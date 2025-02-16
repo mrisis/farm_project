@@ -44,15 +44,19 @@ class PostCategoryNestedSerializer(serializers.ModelSerializer):
         model = PostCategory
         fields = ['id', 'name']
 
+
 class ProvinceNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province
         fields = ['id', 'name']
 
+
 class CityNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ['id', 'name']
+
+
 class PostAddressNestedSerializer(serializers.ModelSerializer):
     province = serializers.SerializerMethodField(read_only=True)
     city = serializers.SerializerMethodField(read_only=True)
@@ -61,14 +65,11 @@ class PostAddressNestedSerializer(serializers.ModelSerializer):
         model = PostAddress
         fields = ['id', 'full_address', 'postal_code', 'province', 'city']
 
-
     def get_province(self, obj):
         return ProvinceNestedSerializer(obj.province).data
 
-
     def get_city(self, obj):
         return CityNestedSerializer(obj.city).data
-
 
 
 class PostListUserSerializer(serializers.ModelSerializer):
@@ -80,10 +81,10 @@ class PostListUserSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField(read_only=True)
     total_seconds = serializers.SerializerMethodField(read_only=True)
 
-
     class Meta:
         model = Post
-        fields = ['id', 'title', 'body', 'author','is_favorite', 'category', 'price', 'address', 'images', 'ratings', 'created_at', 'total_seconds']
+        fields = ['id', 'title', 'body', 'author', 'is_favorite', 'category', 'price', 'address', 'images', 'ratings',
+                  'created_at', 'total_seconds']
 
     def __init__(self, *args, method='list', **kwargs):
         fields = kwargs.pop('only_fields', None)
@@ -135,7 +136,6 @@ class PostListUserSerializer(serializers.ModelSerializer):
         return int((now() - obj.created_at).total_seconds())
 
 
-
 class PostCreateUpdateUserSerializer(serializers.ModelSerializer):
     images_id = serializers.ListSerializer(child=serializers.IntegerField(), write_only=True, required=False)
     full_address = serializers.CharField(write_only=True, required=False)
@@ -145,13 +145,12 @@ class PostCreateUpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'body', 'category', 'unit_price', 'price', 'images_id', 'full_address', 'province',
-                  'city', 'is_visible_mobile', 'is_chat_avaliable','created_at']
+                  'city', 'is_visible_mobile', 'is_chat_avaliable', 'created_at']
 
     def validate(self, attrs):
         if attrs.get('is_visible_mobile', False) is False and attrs.get('is_chat_avaliable', False) is False:
             raise serializers.ValidationError("ChatValidation")
         return attrs
-
 
 
 class PostImageCreateUserSerializer(serializers.ModelSerializer):
@@ -209,12 +208,16 @@ class PostCommentRateUserSerializer(serializers.ModelSerializer):
 
 class PostCommentRateCreateUserSerializer(serializers.ModelSerializer):
     score = serializers.IntegerField(write_only=True, required=False)
+
     class Meta:
         model = Comment
-        fields = ['id', 'text','post', 'parent', 'score', 'created_at']
+        fields = ['id', 'text', 'post', 'parent', 'score', 'created_at']
 
 
 class PostAddToFavoriteUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoritePost
         fields = ['id', 'post']
+
+class RatingCheckSerializer(serializers.Serializer):
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
