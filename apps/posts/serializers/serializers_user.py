@@ -130,7 +130,7 @@ class PostListUserSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return obj.favorites.filter(user=request.user).exists()
-        return None
+        return False
 
     def get_total_seconds(self, obj):
         return int((now() - obj.created_at).total_seconds())
