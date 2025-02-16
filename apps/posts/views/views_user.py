@@ -191,6 +191,9 @@ class PostCommentRateCreateUserApiView(GenericAPIView):
 
         score = serializer.validated_data.get('score', None)
         if score is not None:
+            existing_rating = Rating.objects.filter(post=post, author=request.user).first()
+            if existing_rating:
+                return Response({"detail": "YouHaveAlreadyRatedThisPost."}, status=status.HTTP_400_BAD_REQUEST)
             Rating.objects.create(post=post, author=request.user, score=score)
 
         comment = Comment.objects.create(
@@ -199,6 +202,7 @@ class PostCommentRateCreateUserApiView(GenericAPIView):
             text=serializer.validated_data.get('text'),
             parent=parent
         )
+        comment.save()
 
         return Response({"detail": "Comment and Rating Created Successfully"}, status=status.HTTP_201_CREATED)
 
