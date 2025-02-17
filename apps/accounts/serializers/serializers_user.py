@@ -58,3 +58,7 @@ class UserRolesListSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRole
         fields = ['id', 'role',]
+
+
+class RefreshTokenSerializer(serializers.Serializer):
+    refresh = serializers.CharField()

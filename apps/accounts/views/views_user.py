@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress
 from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, \
-    UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer, UserRolesListSerializer
+    UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer, UserRolesListSerializer, \
+    RefreshTokenSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -112,6 +113,7 @@ class UserAddressListApiView(GenericAPIView):
         serializer = self.get_serializer(user_addresses, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class UserRolesListApiView(GenericAPIView):
     pagination_class = CustomPageNumberPagination
     permission_classes = [IsAuthenticated, ]
@@ -121,3 +123,18 @@ class UserRolesListApiView(GenericAPIView):
         user_roles = request.user.user_roles.all()
         serializer = self.get_serializer(user_roles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RefreshTokenApiView(GenericAPIView):
+    serializer_class = RefreshTokenSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        refresh_token = serializer.validated_data['refresh']
+        try:
+            refresh = RefreshToken(refresh_token)
+            access_token = str(refresh.access_token)
+            return Response({'access': access_token}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({'message': 'InvalidOrExpiredRefreshToken'}, status=status.HTTP_400_BAD_REQUEST)
