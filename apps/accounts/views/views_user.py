@@ -6,12 +6,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress
 from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, \
     UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer, UserRolesListSerializer, \
-    RefreshTokenSerializer, UserProfileInfoSerializer
+    RefreshTokenSerializer, UserProfileInfoSerializer, UserProfileUpdateSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 from apps.accounts.filters import RoleFilter
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
+from apps.files.models import Asset
 
 
 class SendOtpApiView(GenericAPIView):
@@ -149,3 +150,40 @@ class UserProfileInfoApiView(GenericAPIView):
         user = request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class UserProfileUpdateApiView(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserProfileUpdateSerializer
+
+    def put(self, request):
+        user = request.user
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            first_name = serializer.validated_data.get('first_name', user.first_name)
+            last_name = serializer.validated_data.get('last_name', user.last_name)
+            image = serializer.validated_data.get('image', None)
+            if image:
+                if user.profile_image:
+                    user.profile_image.delete()
+
+                asset = Asset.objects.create(owner=user, image=image)
+                user.profile_image = asset
+
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+
+            return Response(
+                {"message": "ProfileUpdated"},
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+

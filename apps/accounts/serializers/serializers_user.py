@@ -81,3 +81,11 @@ class UserProfileInfoSerializer(serializers.ModelSerializer):
             data['profile_image'] = instance.profile_image.image.url
 
         return data
+
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(write_only=True,required=False)
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'image']
+
