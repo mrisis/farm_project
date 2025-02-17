@@ -62,3 +62,18 @@ class UserRolesListSerializer(serializers.ModelSerializer):
 
 class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
+
+
+class UserProfileInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'mobile_number', 'email', 'gender', 'profile_image',]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['profile_image'] = None
+        if instance.profile_image is not None:
+            data['profile_image'] = instance.profile_image.image.url
+
+        return data

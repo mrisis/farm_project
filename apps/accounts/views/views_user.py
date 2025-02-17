@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress
 from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, \
     UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer, UserRolesListSerializer, \
-    RefreshTokenSerializer
+    RefreshTokenSerializer, UserProfileInfoSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -138,3 +138,14 @@ class RefreshTokenApiView(GenericAPIView):
             return Response({'access': access_token}, status=status.HTTP_200_OK)
         except Exception:
             return Response({'message': 'InvalidOrExpiredRefreshToken'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class UserProfileInfoApiView(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserProfileInfoSerializer
+
+    def get(self, request):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

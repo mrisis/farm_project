@@ -11,6 +11,7 @@ urlpatterns = [
             path('verify-otp/', views_user.VerifyOtpApiView.as_view(), name='verify_otp'),
             path('signup/', views_user.UserSignupApiView.as_view(), name='signup'),
             path('refresh-token/', views_user.RefreshTokenApiView.as_view(), name='refresh_token'),
+            path('profile-info/', views_user.UserProfileInfoApiView.as_view(), name='profile_info'),
 
             # role category url
 
