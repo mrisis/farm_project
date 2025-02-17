@@ -54,10 +54,14 @@ class RoleNestedSerializer(serializers.ModelSerializer):
                   ]
 class UserRolesListSerializer(serializers.ModelSerializer):
     role = RoleNestedSerializer(read_only=True)
+    role_icon = serializers.SerializerMethodField()
 
     class Meta:
         model = UserRole
-        fields = ['id', 'role',]
+        fields = ['id', 'role', 'role_icon']
+
+    def get_role_icon(self, obj):
+        return obj.role.icon.url if obj.role.icon else None
 
 
 class RefreshTokenSerializer(serializers.Serializer):
