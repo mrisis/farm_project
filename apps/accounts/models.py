@@ -21,6 +21,13 @@ class User(AbstractBaseUser, BaseUserModel, PermissionsMixin):
     gender = models.CharField(max_length=1, choices=GenderChoice.choices, null=True, blank=True)
     is_admin = models.BooleanField(default=False)
     national_code = models.CharField(max_length=10, null=True, blank=True)
+    profile_image = models.OneToOneField(
+        'files.Asset',
+        on_delete=models.SET_NULL,
+        related_name='user_profile_image',
+        null=True,
+        blank=True
+    )
 
     USERNAME_FIELD = 'mobile_number'
     objects = UserManager()
