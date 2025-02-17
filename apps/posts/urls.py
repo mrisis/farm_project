@@ -18,6 +18,7 @@ urlpatterns = [
             path('post/<int:pk>/delete/', views_user.PostDeleteUserApiView.as_view(), name='post-delete'),
             path('my-posts/list/', views_user.MyPostListUserApiView.as_view(), name='my-posts'),
             path('my-posts/<int:pk>/detail/', views_user.MyPostDetailUserApiView.as_view(), name='my-post-detail'),
+            path('my-posts/<int:pk>/delete/', views_user.MyPostDeleteApiView.as_view(), name='my-post-delete'),
 
             #post image urls
             path('create-post-image/', views_user.PostImageCreateUserApiView.as_view(), name='create-post-image'),

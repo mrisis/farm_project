@@ -326,3 +326,18 @@ class RatingCheckUserApiView(GenericAPIView):
         else:
             return Response({"has_rated": False}, status=status.HTTP_200_OK)
 
+
+class MyPostDeleteApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def delete(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, pk=pk, author=request.user)
+        post_images = post.images.all()
+        for image in post_images:
+            if image.asset is not None:
+                image.asset.delete()
+            image.delete()
+
+        post.delete()
+        return Response({"detail": "PostDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
+
