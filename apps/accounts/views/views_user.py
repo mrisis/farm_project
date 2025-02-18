@@ -3,10 +3,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress
+from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress, UserRole
 from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, \
     UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer, UserRolesListSerializer, \
-    RefreshTokenSerializer, UserProfileInfoSerializer, UserProfileUpdateSerializer
+    RefreshTokenSerializer, UserProfileInfoSerializer, UserProfileUpdateSerializer, UserRoleCreateSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -124,6 +124,21 @@ class UserRolesListApiView(GenericAPIView):
         user_roles = request.user.user_roles.all()
         serializer = self.get_serializer(user_roles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserRoleCreateApiView(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserRoleCreateSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        role = serializer.validated_data['role']
+        if UserRole.objects.filter(user=request.user, role=role).exists():
+            return Response({'message': 'RoleAlreadyExists'}, status=status.HTTP_400_BAD_REQUEST)
+        UserRole.objects.create(user=request.user, role=role)
+        return Response({'message': 'RoleCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
+
 
 
 class RefreshTokenApiView(GenericAPIView):
