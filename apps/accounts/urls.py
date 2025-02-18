@@ -28,6 +28,7 @@ urlpatterns = [
             path('user-address/list/', views_user.UserAddressListApiView.as_view(), name='user_address_list'),
             path('user-address/<int:pk>/detail/', views_user.UserAddressDetailApiView.as_view(), name='user_address_detail'),
             path('user-address/create/', views_user.UserAddressCreateApiview.as_view(), name='user_address_create'),
+            path('user-address/<int:pk>/update/', views_user.UserAddressUpdateApiView.as_view(), name='user_address_update'),
 
             # user roles urls
 

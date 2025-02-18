@@ -147,6 +147,20 @@ class UserAddressCreateApiview(GenericAPIView):
         return Response({'message': 'AddressCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
 
 
+class UserAddressUpdateApiView(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserAddressCreateSerializer
+
+    def put(self, request, pk):
+        user_address = get_object_or_404(UserAddress, pk=pk, user=request.user)
+        serializer = self.get_serializer(user_address, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'AddressUpdatedSuccessfully'}, status=status.HTTP_200_OK)
+
+
+
+
 
 
 class UserRolesListApiView(GenericAPIView):
