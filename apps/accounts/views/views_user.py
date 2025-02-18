@@ -135,13 +135,13 @@ class UserAddressCreateApiview(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_address = UserAddress(
-            province = serializer.validated_data.get('province'),
-            city = serializer.validated_data.get('city'),
-            lat = serializer.validated_data.get('lat', None),
-            lng = serializer.validated_data.get('lng', None),
-            full_address = serializer.validated_data.get('full_address', None),
-            postal_code = serializer.validated_data.get('postal_code', None),
-            user = request.user
+            province=serializer.validated_data.get('province'),
+            city=serializer.validated_data.get('city'),
+            lat=serializer.validated_data.get('lat', None),
+            lng=serializer.validated_data.get('lng', None),
+            full_address=serializer.validated_data.get('full_address', None),
+            postal_code=serializer.validated_data.get('postal_code', None),
+            user=request.user
         )
         user_address.save()
         return Response({'message': 'AddressCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
@@ -159,8 +159,13 @@ class UserAddressUpdateApiView(GenericAPIView):
         return Response({'message': 'AddressUpdatedSuccessfully'}, status=status.HTTP_200_OK)
 
 
+class UserAddressDeleteApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
 
-
+    def delete(self, request, pk):
+        user_address = get_object_or_404(UserAddress, pk=pk, user=request.user)
+        user_address.delete()
+        return Response({'message': 'AddressDeletedSuccessfully'}, status=status.HTTP_200_OK)
 
 
 class UserRolesListApiView(GenericAPIView):
