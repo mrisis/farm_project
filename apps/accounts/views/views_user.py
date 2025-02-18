@@ -116,6 +116,16 @@ class UserAddressListApiView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class UserAddressDetailApiView(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserAddressListSerializer
+
+    def get(self, request, pk):
+        user_address = get_object_or_404(UserAddress, pk=pk , user=request.user)
+        serializer = self.get_serializer(user_address)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class UserRolesListApiView(GenericAPIView):
     pagination_class = CustomPageNumberPagination
     permission_classes = [IsAuthenticated, ]
