@@ -140,6 +140,16 @@ class UserRoleCreateApiView(GenericAPIView):
         return Response({'message': 'RoleCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
 
 
+class UserRoleDetailApiView(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserRolesListSerializer
+
+    def get(self, request, pk):
+        user_role = get_object_or_404(UserRole, pk=pk , user= request.user)
+        serializer = self.get_serializer(user_role)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
 class RefreshTokenApiView(GenericAPIView):
     serializer_class = RefreshTokenSerializer

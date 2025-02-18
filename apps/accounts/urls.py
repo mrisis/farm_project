@@ -31,6 +31,7 @@ urlpatterns = [
 
             path('user-roles/list/', views_user.UserRolesListApiView.as_view(), name='user_roles_list'),
             path('user-roles/create/', views_user.UserRoleCreateApiView.as_view(), name='user_roles_create'),
+            path('user-roles/<int:pk>/detail/', views_user.UserRoleDetailApiView.as_view(), name='user_roles_detail'),
         ]))
     ]))
 ]
