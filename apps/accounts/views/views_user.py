@@ -17,6 +17,7 @@ from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from apps.files.models import Asset
 
 
+
 class SendOtpApiView(GenericAPIView):
     serializer_class = SendOtpCodeSerializer
 
@@ -89,8 +90,10 @@ class RoleCategoryListApiView(GenericAPIView):
 
     def get(self, request):
         role_categories = RoleCategory.objects.all()
+        page = self.paginate_queryset(role_categories)
         serializer = self.get_serializer(role_categories, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
+
 
 
 class RoleListApiView(GenericAPIView):
