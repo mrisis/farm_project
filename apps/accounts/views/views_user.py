@@ -2,6 +2,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress, UserRole
 from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, \
@@ -148,6 +149,14 @@ class UserRoleDetailApiView(GenericAPIView):
         user_role = get_object_or_404(UserRole, pk=pk , user= request.user)
         serializer = self.get_serializer(user_role)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserRoleDeleteApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
+    def delete(self, request, pk):
+        user_role = get_object_or_404(UserRole, pk=pk, user= request.user)
+        user_role.delete()
+        return Response({'message': 'RoleDeletedSuccessfully'}, status=status.HTTP_200_OK)
 
 
 
