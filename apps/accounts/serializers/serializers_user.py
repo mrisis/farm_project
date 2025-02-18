@@ -46,6 +46,12 @@ class UserAddressListSerializer(serializers.ModelSerializer):
         model = UserAddress
         fields = ['id', 'province', 'city', 'full_address', 'postal_code', 'lat', 'lng',]
 
+
+class UserAddressCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = ['province', 'city', 'full_address', 'postal_code', 'lat', 'lng',]
+
 class RoleNestedSerializer(serializers.ModelSerializer):
 
     class Meta:

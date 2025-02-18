@@ -7,7 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress, UserRole
 from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, \
     UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer, UserRolesListSerializer, \
-    RefreshTokenSerializer, UserProfileInfoSerializer, UserProfileUpdateSerializer, UserRoleCreateSerializer
+    RefreshTokenSerializer, UserProfileInfoSerializer, UserProfileUpdateSerializer, UserRoleCreateSerializer, \
+    UserAddressCreateSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -121,9 +122,31 @@ class UserAddressDetailApiView(GenericAPIView):
     serializer_class = UserAddressListSerializer
 
     def get(self, request, pk):
-        user_address = get_object_or_404(UserAddress, pk=pk , user=request.user)
+        user_address = get_object_or_404(UserAddress, pk=pk, user=request.user)
         serializer = self.get_serializer(user_address)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserAddressCreateApiview(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserAddressCreateSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_address = UserAddress(
+            province = serializer.validated_data.get('province'),
+            city = serializer.validated_data.get('city'),
+            lat = serializer.validated_data.get('lat', None),
+            lng = serializer.validated_data.get('lng', None),
+            full_address = serializer.validated_data.get('full_address', None),
+            postal_code = serializer.validated_data.get('postal_code', None),
+            user = request.user
+        )
+        user_address.save()
+        return Response({'message': 'AddressCreatedSuccessfully'}, status=status.HTTP_201_CREATED)
+
+
 
 
 class UserRolesListApiView(GenericAPIView):
@@ -156,18 +179,18 @@ class UserRoleDetailApiView(GenericAPIView):
     serializer_class = UserRolesListSerializer
 
     def get(self, request, pk):
-        user_role = get_object_or_404(UserRole, pk=pk , user= request.user)
+        user_role = get_object_or_404(UserRole, pk=pk, user=request.user)
         serializer = self.get_serializer(user_role)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserRoleDeleteApiView(APIView):
     permission_classes = [IsAuthenticated, ]
+
     def delete(self, request, pk):
-        user_role = get_object_or_404(UserRole, pk=pk, user= request.user)
+        user_role = get_object_or_404(UserRole, pk=pk, user=request.user)
         user_role.delete()
         return Response({'message': 'RoleDeletedSuccessfully'}, status=status.HTTP_200_OK)
-
 
 
 class RefreshTokenApiView(GenericAPIView):
@@ -185,7 +208,6 @@ class RefreshTokenApiView(GenericAPIView):
             return Response({'message': 'InvalidOrExpiredRefreshToken'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class UserProfileInfoApiView(GenericAPIView):
     permission_classes = [IsAuthenticated, ]
     serializer_class = UserProfileInfoSerializer
@@ -194,7 +216,6 @@ class UserProfileInfoApiView(GenericAPIView):
         user = request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 
 class UserProfileUpdateApiView(GenericAPIView):
@@ -224,10 +245,3 @@ class UserProfileUpdateApiView(GenericAPIView):
                 status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-
