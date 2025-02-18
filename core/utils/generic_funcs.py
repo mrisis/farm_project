@@ -4,6 +4,7 @@ from django.conf import settings
 from random import randint
 from kavenegar import *
 from config.settings import env
+import re
 
 
 
@@ -58,3 +59,9 @@ def send_sms_otp_code(mobile_number, code):
         print(e)
     except HTTPException as e:
         print(e)
+
+
+def is_valid_iranian_mobile_number(mobile_number):
+
+    pattern = r'^09\d{9}$'
+    return bool(re.fullmatch(pattern, mobile_number))
