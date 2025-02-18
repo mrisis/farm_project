@@ -118,8 +118,9 @@ class UserAddressListApiView(GenericAPIView):
 
     def get(self, request):
         user_addresses = UserAddress.objects.filter(user=request.user)
+        page = self.paginate_queryset(user_addresses)
         serializer = self.get_serializer(user_addresses, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
 
 
 class UserAddressDetailApiView(GenericAPIView):
