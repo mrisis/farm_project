@@ -105,8 +105,10 @@ class RoleListApiView(GenericAPIView):
 
     def get(self, request):
         roles = self.filter_queryset(Role.objects.all())
+        page = self.paginate_queryset(roles)
         serializer = self.get_serializer(roles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
+
 
 
 class UserAddressListApiView(GenericAPIView):
