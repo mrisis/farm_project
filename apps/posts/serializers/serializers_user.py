@@ -98,13 +98,21 @@ class PostListUserSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
     def get_images(self, obj):
+        request = self.context.get('request')
         if self.method == 'list':
-            images = PostImage.objects.filter(post=obj).first()
-            return PostImageListUserSerializer(images).data
+            image = PostImage.objects.filter(post=obj).first()
+            if image:
+                return {
+                    'url': request.build_absolute_uri(image.asset.image.url)
+                }
+            return None
 
         elif self.method == 'detail':
             images = PostImage.objects.filter(post=obj)
-            return PostImageListUserSerializer(images, many=True).data
+            return [
+                {'url': request.build_absolute_uri(image.asset.image.url)}
+                for image in images
+            ]
 
     def get_author(self, obj):
         if obj.is_visible_mobile:
