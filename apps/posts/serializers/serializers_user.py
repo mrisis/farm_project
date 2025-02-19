@@ -155,7 +155,7 @@ class PostCreateUpdateUserSerializer(serializers.ModelSerializer):
 
 class PostImageCreateUserSerializer(serializers.ModelSerializer):
     asset = AssetSerializer(read_only=True)
-    image = serializers.ImageField(write_only=True, required=False)
+    image = serializers.ImageField(write_only=True, required=True)
 
     class Meta:
         model = PostImage
