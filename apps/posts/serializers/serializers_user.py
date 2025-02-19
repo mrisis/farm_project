@@ -103,14 +103,18 @@ class PostListUserSerializer(serializers.ModelSerializer):
             image = PostImage.objects.filter(post=obj).first()
             if image:
                 return {
-                    'url': request.build_absolute_uri(image.asset.image.url)
+                    'url': request.build_absolute_uri(image.asset.image.url),
+                    "id": image.asset.id
                 }
             return None
 
         elif self.method == 'detail':
             images = PostImage.objects.filter(post=obj)
             return [
-                {'url': request.build_absolute_uri(image.asset.image.url)}
+                {
+                    'url': request.build_absolute_uri(image.asset.image.url),
+                    "id": image.asset.id
+                }
                 for image in images
             ]
 
@@ -226,6 +230,7 @@ class PostAddToFavoriteUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoritePost
         fields = ['id', 'post']
+
 
 class RatingCheckSerializer(serializers.Serializer):
     post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
