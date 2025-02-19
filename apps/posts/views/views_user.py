@@ -193,7 +193,7 @@ class PostCommentRateCreateUserApiView(GenericAPIView):
         if score is not None:
             existing_rating = Rating.objects.filter(post=post, author=request.user).first()
             if existing_rating:
-                return Response({"detail": "YouHaveAlreadyRatedThisPost."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"detail": "YouHaveAlreadyRatedThisPost"}, status=status.HTTP_400_BAD_REQUEST)
             Rating.objects.create(post=post, author=request.user, score=score)
 
         comment = Comment.objects.create(
