@@ -171,7 +171,7 @@ class PostCommentRateListUserApiView(GenericAPIView):
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
-        comments = post.comments.all()
+        comments = post.comments.all().order_by('-created_at')
 
         serializer = self.get_serializer(comments, many=True)
 
