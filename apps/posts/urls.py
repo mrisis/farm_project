@@ -22,6 +22,7 @@ urlpatterns = [
 
             #post image urls
             path('create-post-image/', views_user.PostImageCreateUserApiView.as_view(), name='create-post-image'),
+            path('post-image/<int:pk>/remove/', views_user.PostImageRemoveApiView.as_view(), name='post-image-remove'),
 
 
 

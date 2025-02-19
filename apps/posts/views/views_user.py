@@ -341,3 +341,21 @@ class MyPostDeleteApiView(APIView):
         post.delete()
         return Response({"detail": "PostDeletedSuccessfully"}, status=status.HTTP_204_NO_CONTENT)
 
+
+class PostImageRemoveApiView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            post_image = PostImage.objects.select_related('post').get(pk=pk)
+        except PostImage.DoesNotExist:
+            return Response({"detail": "PostImageNotFound"}, status=status.HTTP_404_NOT_FOUND)
+
+        if post_image.post.author != request.user:
+            return Response({"detail": "YouAreNotTheAuthorOfThisPost"}, status=status.HTTP_403_FORBIDDEN)
+        if post_image.asset is not None:
+            post_image.asset.delete()
+            post_image.delete()
+            return Response({"detail": "PostImageRemovedSuccessfully"}, status=status.HTTP_200_OK)
+
+        return Response({"detail": "PostImageNotFound"}, status=status.HTTP_404_NOT_FOUND)
