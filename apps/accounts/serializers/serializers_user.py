@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from apps.accounts.models import OtpCode, User, RoleCategory, Role, UserAddress, UserRole
-from apps.locations.serializers.serializers_user import ProvinceSerializer, CitySerializer
 
 
 class SendOtpCodeSerializer(serializers.ModelSerializer):
@@ -39,12 +38,25 @@ class RoleSerializer(serializers.ModelSerializer):
 
 
 class UserAddressListSerializer(serializers.ModelSerializer):
-    province = ProvinceSerializer(read_only=True)
-    city = CitySerializer(read_only=True)
+    province = serializers.SerializerMethodField()
+    city = serializers.SerializerMethodField()
 
     class Meta:
         model = UserAddress
         fields = ['id', 'province', 'city', 'full_address', 'postal_code', 'lat', 'lng',]
+
+    def get_province(self, obj):
+        return {
+
+            'id': obj.province.id,
+            'name': obj.province.name,
+        }
+
+    def get_city(self, obj):
+        return {
+            'id': obj.city.id,
+            'name': obj.city.name,
+        }
 
 
 class UserAddressCreateSerializer(serializers.ModelSerializer):
