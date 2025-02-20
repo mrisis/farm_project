@@ -83,13 +83,14 @@ class UserProfileInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'mobile_number', 'email', 'gender', 'profile_image',]
+        fields = ['id', 'first_name', 'last_name', 'mobile_number', 'gender', 'profile_image',]
 
     def to_representation(self, instance):
+        request = self.context.get('request')
         data = super().to_representation(instance)
         data['profile_image'] = None
         if instance.profile_image is not None:
-            data['profile_image'] = instance.profile_image.image.url
+            data['profile_image'] = request.build_absolute_uri(instance.profile_image.image.url)
 
         return data
 
