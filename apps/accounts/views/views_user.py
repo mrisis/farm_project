@@ -85,19 +85,16 @@ class UserSignupApiView(GenericAPIView):
 
 
 class RoleCategoryListApiView(GenericAPIView):
-    pagination_class = CustomPageNumberPagination
     serializer_class = RoleCategorySerializer
 
     def get(self, request):
         role_categories = RoleCategory.objects.all()
-        page = self.paginate_queryset(role_categories)
         serializer = self.get_serializer(role_categories, many=True)
-        return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
 class RoleListApiView(GenericAPIView):
-    pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = RoleFilter
 
