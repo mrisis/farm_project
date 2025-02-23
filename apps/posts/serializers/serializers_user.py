@@ -84,7 +84,7 @@ class PostListUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'body', 'author', 'is_favorite', 'category', 'price', 'address', 'images', 'ratings',
-                  'created_at', 'total_seconds']
+                  'created_at', 'total_seconds', 'is_visible_mobile', 'is_chat_avaliable']
 
     def __init__(self, *args, method='list', **kwargs):
         fields = kwargs.pop('only_fields', None)
