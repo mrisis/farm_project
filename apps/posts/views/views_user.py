@@ -248,6 +248,7 @@ class MyFavoritePostListUserApiView(GenericAPIView):
             'title',
             'images',
             'address',
+            'price',
             'created_at',
         })
         return self.get_paginated_response(serializer.data)
@@ -289,6 +290,7 @@ class MyPostListUserApiView(GenericAPIView):
             'title',
             'images',
             'address',
+            'price',
             'created_at',
         })
         return self.get_paginated_response(serializer.data)
