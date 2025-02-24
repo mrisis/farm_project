@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from urllib3 import request
+
 from apps.posts.models import PostCategory, PostImage, Post, PostAddress, Rating, Comment, FavoritePost
 from apps.files.serializers import AssetSerializer
 from datetime import timedelta
@@ -206,10 +208,12 @@ class PostCommentRateUserSerializer(serializers.ModelSerializer):
         return rating.score if rating else None
 
     def get_author(self, obj):
+        request = self.context.get('request')
         return {
             'id': obj.author.id,
             'first_name': obj.author.first_name,
             'last_name': obj.author.last_name,
+            'author_image': request.build_absolute_uri(obj.author.profile_image.image.url) if obj.author.profile_image else None
         }
 
     def get_created_at_shamsi(self, obj):
