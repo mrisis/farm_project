@@ -80,6 +80,8 @@ class UserSignupApiView(GenericAPIView):
         first_name = serializer.validated_data['first_name']
         last_name = serializer.validated_data['last_name']
         user = User.objects.create(mobile_number=mobile_number, first_name=first_name, last_name=last_name)
+        role = Role.objects.get(name='کاربر عادی')
+        UserRole.objects.create(user=user, role=role)
         user.create_and_send_otp()
         return Response({'message': 'UserCreatedSuccessfully', 'remaining_time': 120}, status=status.HTTP_201_CREATED)
 
