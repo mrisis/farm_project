@@ -106,7 +106,7 @@ class PostListUserSerializer(serializers.ModelSerializer):
             if image:
                 return {
                     'url': request.build_absolute_uri(image.asset.image.url),
-                    "id": image.asset.id
+                    "id": image.id
                 }
             return None
 
@@ -115,7 +115,7 @@ class PostListUserSerializer(serializers.ModelSerializer):
             return [
                 {
                     'url': request.build_absolute_uri(image.asset.image.url),
-                    "id": image.asset.id
+                    "id": image.id
                 }
                 for image in images
             ]
