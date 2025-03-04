@@ -25,7 +25,7 @@ class PostCategoryListApiView(GenericAPIView):
     filterset_class = post_filters.PostCategoryFilterSet
 
     def get(self, request):
-        categorie_qs = self.filter_queryset(PostCategory.objects.all())
+        categorie_qs = self.filter_queryset(PostCategory.objects.all().order_by('subcategories', '-id'))
         serializer = self.get_serializer(categorie_qs, many=True)
         return Response(serializer.data)
 
