@@ -1,7 +1,7 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer
 from apps.accounts.models import User
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -70,3 +70,12 @@ class AdminLoginView(GenericAPIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
         
+
+class UserListAdminView(GenericAPIView):
+    serializer_class = UserListAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        users = User.objects.all()
+        serializer = self.serializer_class(users, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
