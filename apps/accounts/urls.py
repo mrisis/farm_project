@@ -1,5 +1,6 @@
 from django.urls import path, include
 from apps.accounts.views import views_user
+from apps.accounts.views import views_admin
 
 app_name = 'accounts'
 
@@ -37,6 +38,12 @@ urlpatterns = [
             path('user-roles/create/', views_user.UserRoleCreateApiView.as_view(), name='user_roles_create'),
             path('user-roles/<int:pk>/detail/', views_user.UserRoleDetailApiView.as_view(), name='user_roles_detail'),
             path('user-roles/<int:pk>/delete/', views_user.UserRoleDeleteApiView.as_view(), name='user_roles_delete'),
-        ]))
+
+            path('admin/', include([
+                path('login/', views_admin.AdminLoginView.as_view(), name='admin_login'),
+            ]))
+        ])),
+        
+
     ]))
 ]
