@@ -69,6 +69,7 @@ urlpatterns = [
                 path('user-address/<int:pk>/detail/', views_admin.UserAddressDetailAdminView.as_view(), name='user_address_detail'),
                 path('user-address/create/', views_admin.UserAddressCreateAdminView.as_view(), name='user_address_create'),
                 path('user-address/<int:pk>/update/', views_admin.UserAddressUpdateAdminView.as_view(), name='user_address_update'),
+                path('user-address/<int:pk>/delete/', views_admin.UserAddressDeleteAdminView.as_view(), name='user_address_delete'),
             ]))
         ])),
         

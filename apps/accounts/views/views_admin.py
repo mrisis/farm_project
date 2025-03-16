@@ -351,3 +351,12 @@ class UserAddressUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserAddressDeleteAdminView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        user_address = get_object_or_404(UserAddress, pk=pk)
+        user_address.delete()
+        return Response({'message': 'User address deleted successfully'}, status=status.HTTP_200_OK)
