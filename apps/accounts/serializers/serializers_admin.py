@@ -197,6 +197,29 @@ class UserAddressListAdminSerializer(serializers.ModelSerializer):
 
 
 
+class UserAddressDetailAdminSerializer(serializers.ModelSerializer):
+    province = serializers.StringRelatedField(source='province.name')
+    city = serializers.StringRelatedField(source='city.name')
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserAddress
+        fields = ['id',
+                  'full_address',
+                  'lat',
+                  'lng',
+                  'province',
+                  'city',
+                  'user',
+                  ]
+        
+    def get_user(self, obj):
+        return{
+            'id': obj.user.id,
+            'mobile_number': obj.user.mobile_number,
+            'first_name': obj.user.first_name,
+            'last_name': obj.user.last_name,
+        }
 
 
     

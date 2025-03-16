@@ -2,7 +2,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer
 from apps.accounts.models import User, RoleCategory,Role, UserAddress
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -296,7 +296,7 @@ class RoleDeleteAdminView(APIView):
 
 class UserAddressListAdminView(GenericAPIView):
     serializer_class = UserAddressListAdminSerializer
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = UserAddressFilterAdmin
     search_fields = ['user__mobile_number', 'province__name', 'city__name']
@@ -310,3 +310,11 @@ class UserAddressListAdminView(GenericAPIView):
 
 
 
+class UserAddressDetailAdminView(GenericAPIView):
+    serializer_class = UserAddressDetailAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        user_address = get_object_or_404(UserAddress, pk=pk)
+        serializer = self.serializer_class(user_address)
+        return Response(serializer.data, status=status.HTTP_200_OK)
