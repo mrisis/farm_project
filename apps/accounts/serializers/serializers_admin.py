@@ -1,4 +1,4 @@
-from apps.accounts.models import User, RoleCategory, Role
+from apps.accounts.models import User, RoleCategory, Role, UserAddress
 from rest_framework import serializers
 from apps.locations.models import Province
 from apps.accounts.models import UserAddress
@@ -178,6 +178,23 @@ class RoleUpdateAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
         return data
 
     
+
+
+
+class UserAddressListAdminSerializer(serializers.ModelSerializer):
+    user_mobile_number = serializers.StringRelatedField(source='user.mobile_number')
+    province_name = serializers.StringRelatedField(source='province.name')
+    city_name = serializers.StringRelatedField(source='city.name')
+    user_full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserAddress
+        fields = ['id', 'user_mobile_number', 'user_full_name', 'province_name', 'city_name']
+
+    
+    def get_user_full_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}".strip()
+
 
 
 

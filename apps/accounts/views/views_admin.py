@@ -2,12 +2,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer
-from apps.accounts.models import User, RoleCategory,Role
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer
+from apps.accounts.models import User, RoleCategory,Role, UserAddress
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
-from apps.accounts.filters import UserFilterAdmin, RoleFilter
+from apps.accounts.filters import UserFilterAdmin, RoleFilter, UserAddressFilterAdmin
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from django.shortcuts import get_object_or_404
@@ -291,3 +291,22 @@ class RoleDeleteAdminView(APIView):
         role = get_object_or_404(Role, pk=pk)
         role.delete()
         return Response({'message': 'Role deleted successfully'}, status=status.HTTP_200_OK)
+    
+
+
+class UserAddressListAdminView(GenericAPIView):
+    serializer_class = UserAddressListAdminSerializer
+    # permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = UserAddressFilterAdmin
+    search_fields = ['user__mobile_number', 'province__name', 'city__name']
+
+    def get(self, request):
+        user_addresses = UserAddress.objects.all()
+        filtered_user_addresses = self.filter_queryset(user_addresses)
+        serializer = self.serializer_class(filtered_user_addresses, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+
