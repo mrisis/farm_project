@@ -290,6 +290,12 @@ class UserRoleCreateAdminSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'role']
 
 
+class UserRoleUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRole
+        fields = ['id', 'user', 'role']
+
+
 
         
         

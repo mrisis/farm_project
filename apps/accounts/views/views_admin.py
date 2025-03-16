@@ -2,7 +2,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer, UserAddressUpdateAdminSerializer, OtpCodeListAdminSerializer, UserRoleListAdminSerializer, UserRoleDetailAdminSerializer, UserRoleCreateAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer, UserAddressUpdateAdminSerializer, OtpCodeListAdminSerializer, UserRoleListAdminSerializer, UserRoleDetailAdminSerializer, UserRoleCreateAdminSerializer, UserRoleUpdateAdminSerializer
 from apps.accounts.models import User, RoleCategory,Role, UserAddress, OtpCode, UserRole
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -419,3 +419,17 @@ class UserRoleCreateAdminView(GenericAPIView):
         )
         user_role.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+class UserRoleUpdateAdminView(GenericAPIView):
+    serializer_class = UserRoleUpdateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, pk):
+        user_role = get_object_or_404(UserRole, pk=pk)
+        serializer = self.serializer_class(user_role, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
