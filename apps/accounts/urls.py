@@ -53,6 +53,7 @@ urlpatterns = [
                 # role category admin urls
                 path('role-category/list/', views_admin.RoleCategoryListAdminView.as_view(), name='role_category_list'),
                 path('role-category/<int:pk>/detail/', views_admin.RoleCategoryDetailAdminView.as_view(), name='role_category_detail'),
+                path('role-category/create/', views_admin.RoleCategoryCreateAdminView.as_view(), name='role_category_create'),
             ]))
         ])),
         

@@ -122,4 +122,10 @@ class RoleCategoryDetailAdminSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description',]
 
 
+class RoleCategoryCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoleCategory
+        fields = ['id', 'name', 'description',]
+
+
 
