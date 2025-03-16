@@ -2,7 +2,7 @@ from apps.accounts.models import User, RoleCategory, Role
 from rest_framework import serializers
 from apps.locations.models import Province
 from apps.accounts.models import UserAddress
-
+from apps.accounts.mixins import ImageUrlMixin
 class AdminLoginSerializer(serializers.Serializer):
     mobile_number = serializers.CharField()
     password = serializers.CharField()
@@ -135,18 +135,19 @@ class RoleCategoryUpdateAdminSerializer(serializers.ModelSerializer):
 
 
 
-class RoleListAdminSerializer(serializers.ModelSerializer):
+class RoleListAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ['id', 'name', 'category', 'icon']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['icon'] = None
+        data['icon'] = self.get_image_url(instance, image_field='icon', default=None)
         data['category'] = instance.category.name
-        if instance.icon:
-            data['icon'] = self.context['request'].build_absolute_uri(instance.icon.url)
         return data
+    
+
+
 
 
 
