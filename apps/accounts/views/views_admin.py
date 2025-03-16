@@ -211,4 +211,13 @@ class RoleCategoryUpdateAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
+class RoleCategoryDeleteAdminView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        role_category = get_object_or_404(RoleCategory, pk=pk)
+        role_category.delete()
+        return Response({'message': 'Role category deleted successfully'}, status=status.HTTP_200_OK)
+    
+
 
