@@ -59,6 +59,7 @@ urlpatterns = [
 
                 # role admin urls
                 path('role/list/', views_admin.RoleListAdminView.as_view(), name='role_list'),
+                path('role-detail/<int:pk>/', views_admin.RoleDetailAdminView.as_view(), name='role_detail'),
             ]))
         ])),
         

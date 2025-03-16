@@ -148,7 +148,16 @@ class RoleListAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
     
 
 
+class RoleDetailAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name', 'description', 'category', 'icon']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['icon'] = self.get_image_url(instance, image_field='icon', default=None)
+        data['category'] = instance.category.name
+        return data
 
 
     

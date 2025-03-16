@@ -2,7 +2,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer
 from apps.accounts.models import User, RoleCategory,Role
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -236,6 +236,19 @@ class RoleListAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     
+
+
+
+class RoleDetailAdminView(GenericAPIView):
+    serializer_class = RoleDetailAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        role = get_object_or_404(Role, pk=pk)
+        serializer = self.serializer_class(role, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
 
 
 
