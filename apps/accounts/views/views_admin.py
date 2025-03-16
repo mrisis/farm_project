@@ -5,27 +5,10 @@ from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, Us
 from apps.accounts.models import User
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
-
-# class AdminLoginView(GenericAPIView):
-#     serializer_class = AdminLoginSerializer
-
-#     def post(self, request):
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = User.objects.get(mobile_number=serializer.validated_data.get('mobile_number'))
-
-#         if not user.is_admin:
-#             return Response({'error': 'User is not an admin'}, status=status.HTTP_401_UNAUTHORIZED)
-
-#         if not user.check_password(serializer.validated_data.get('password')):
-#             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-#         else:
-#             access_token = RefreshToken.for_user(user).access_token
-#             refresh_token = RefreshToken.for_user(user)
-#             return Response({'access_token': str(access_token), 'refresh_token': str(refresh_token)}, status=status.HTTP_200_OK)
-            
-    
-
+from core.utils.C_drf.C_paginations import CustomPageNumberPagination
+from apps.accounts.filters import UserFilterAdmin
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 
 
 
@@ -74,8 +57,15 @@ class AdminLoginView(GenericAPIView):
 class UserListAdminView(GenericAPIView):
     serializer_class = UserListAdminSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = UserFilterAdmin
+    search_fields = ['mobile_number', 'first_name', 'last_name', 'user_roles__role__name']
 
     def get(self, request):
         users = User.objects.all()
-        serializer = self.serializer_class(users, many=True, context={'request': request})
+        filtered_users = self.filter_queryset(users)
+        serializer = self.serializer_class(filtered_users, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
