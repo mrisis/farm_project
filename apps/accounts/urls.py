@@ -40,6 +40,8 @@ urlpatterns = [
             path('user-roles/<int:pk>/delete/', views_user.UserRoleDeleteApiView.as_view(), name='user_roles_delete'),
 
             path('admin/', include([
+
+                # user admin
                 path('login/', views_admin.AdminLoginView.as_view(), name='admin_login'),
                 path('user-list/', views_admin.UserListAdminView.as_view(), name='user_list'),
                 path('user-count/', views_admin.UserCountAdminView.as_view(), name='user_count'),
@@ -47,6 +49,9 @@ urlpatterns = [
                 path('user-update/<int:pk>/', views_admin.UserUpdateAdminView.as_view(), name='user_update'),
                 path('user-create/', views_admin.UserCreateAdminView.as_view(), name='user_create'),
                 path('user-delete/<int:pk>/', views_admin.UserDeleteAdminView.as_view(), name='user_delete'),
+
+                # role category admin urls
+                path('role-category/list/', views_admin.RoleCategoryListAdminView.as_view(), name='role_category_list'),
             ]))
         ])),
         

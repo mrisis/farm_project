@@ -2,8 +2,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer
-from apps.accounts.models import User
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer
+from apps.accounts.models import User, RoleCategory
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
@@ -158,3 +158,15 @@ class UserDeleteAdminView(APIView):
         user = get_object_or_404(User, pk=pk)
         user.delete()
         return Response(message='User deleted successfully', status=status.HTTP_200_OK)
+    
+
+
+
+class RoleCategoryListAdminView(GenericAPIView):
+    serializer_class = RoleCategoryListAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        role_categories = RoleCategory.objects.all()
+        serializer = self.serializer_class(role_categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

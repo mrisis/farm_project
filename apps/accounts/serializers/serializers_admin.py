@@ -1,4 +1,4 @@
-from apps.accounts.models import User
+from apps.accounts.models import User, RoleCategory
 from rest_framework import serializers
 from apps.locations.models import Province
 from apps.accounts.models import UserAddress
@@ -103,4 +103,17 @@ class UserCreateAdminSerializer(serializers.ModelSerializer):
         
         
         
-        
+class RoleCategoryListAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoleCategory
+        fields = ['id', 'name', 'description',]
+
+    
+    def to_representation(self, instance):
+         # description is slice to 70 characters
+         data = super().to_representation(instance)
+         data['description'] = data['description'][:70]
+         return data
+
+
+
