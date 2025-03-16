@@ -60,4 +60,30 @@ class UserDetailAdminSerializer(serializers.ModelSerializer):
                 'province': address.province.name,
                 'city': address.city.name
             } for address in addresses]
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['profile_image'] = None
+        if instance.profile_image:
+            data['profile_image'] = self.context['request'].build_absolute_uri(instance.profile_image.image.url)
+        return data
+    
+
+
+class UserUpdateAdminSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(write_only=True, required=False)
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'mobile_number', 'image', ]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['profile_image'] = None
+        if instance.profile_image:
+            data['profile_image'] = self.context['request'].build_absolute_uri(instance.profile_image.image.url)
+        return data
+
+        
+        
+        
         

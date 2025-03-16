@@ -1,7 +1,7 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer
 from apps.accounts.models import User
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -10,7 +10,7 @@ from apps.accounts.filters import UserFilterAdmin
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from django.shortcuts import get_object_or_404
-
+from apps.files.models import Asset
 
 
 class AdminLoginView(GenericAPIView):
@@ -79,3 +79,32 @@ class UserDetailAdminView(GenericAPIView):
         user = get_object_or_404(User, pk=pk)
         serializer = self.serializer_class(user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class UserUpdateAdminView(GenericAPIView):
+    serializer_class = UserUpdateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request,pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = self.serializer_class(user, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            image = serializer.validated_data.get('image', None)
+            if image:
+                if user.profile_image:
+                    user.profile_image.delete()
+                asset = Asset.objects.create(owner=user, image=image)
+                user.profile_image = asset
+            user.first_name = serializer.validated_data.get('first_name', user.first_name)
+            user.last_name = serializer.validated_data.get('last_name', user.last_name)
+            user.email = serializer.validated_data.get('email', user.email)
+            user.mobile_number = serializer.validated_data.get('mobile_number', user.mobile_number)
+            user.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+
+
+
+    
