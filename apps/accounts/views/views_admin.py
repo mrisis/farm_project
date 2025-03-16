@@ -1,4 +1,5 @@
 from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer
@@ -142,4 +143,11 @@ class UserCreateAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         
-        
+
+class UserDeleteAdminView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        user.delete()
+        return Response(message='User deleted successfully', status=status.HTTP_200_OK)
