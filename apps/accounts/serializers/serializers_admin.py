@@ -283,6 +283,14 @@ class UserRoleDetailAdminSerializer(serializers.ModelSerializer):
             'category': obj.role.category.name,
         }
         
+
+class UserRoleCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRole
+        fields = ['id', 'user', 'role']
+
+
+
         
         
         
