@@ -433,3 +433,13 @@ class UserRoleUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class UserRoleDeleteAdminView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        user_role = get_object_or_404(UserRole, pk=pk)
+        user_role.delete()
+        return Response({'message': 'User role deleted successfully'}, status=status.HTTP_200_OK)
