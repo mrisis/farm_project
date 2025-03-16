@@ -1,7 +1,7 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer
 from apps.accounts.models import User
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,6 +9,7 @@ from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from apps.accounts.filters import UserFilterAdmin
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+from django.shortcuts import get_object_or_404
 
 
 
@@ -68,4 +69,13 @@ class UserListAdminView(GenericAPIView):
         serializer = self.serializer_class(filtered_users, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         
-        
+
+
+class UserDetailAdminView(GenericAPIView):
+    serializer_class = UserDetailAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = self.serializer_class(user, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

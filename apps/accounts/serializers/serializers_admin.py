@@ -30,4 +30,34 @@ class UserListAdminSerializer(serializers.ModelSerializer):
         return data
 
 
+
+class UserDetailAdminSerializer(serializers.ModelSerializer):
+    roles = serializers.SerializerMethodField()
+    addresses = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'mobile_number', 'roles', 'addresses']
+
+    
+    def get_roles(self, obj):
+        roles = obj.user_roles.all()
+        return [
+            {
+                'id': role.role.id,
+                'name': role.role.name,
+            } for role in roles]
+    
+
+    def get_addresses(self, obj):
+        addresses = obj.addresses.all()
+
+        return [
+            {
+                'id': address.id,
+                'full_address': address.full_address,
+                'lat': address.lat,
+                'lng': address.lng,
+                'province': address.province.name,
+                'city': address.city.name
+            } for address in addresses]
         
