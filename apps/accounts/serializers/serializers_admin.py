@@ -160,6 +160,14 @@ class RoleDetailAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
         return data
 
 
+class RoleCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name', 'description', 'category', 'icon']
+
+
+
+
     
 
 
