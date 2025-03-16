@@ -260,4 +260,32 @@ class UserRoleListAdminSerializer(serializers.ModelSerializer):
 
 
 
+class UserRoleDetailAdminSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserRole
+        fields = ['id', 'user', 'role']
+
+    def get_user(self, obj):
+        return{
+            'id': obj.user.id,
+            'mobile_number': obj.user.mobile_number,
+            'first_name': obj.user.first_name,
+            'last_name': obj.user.last_name,
+        }
+
+    def get_role(self, obj):
+        return{
+            'id': obj.role.id,
+            'name': obj.role.name,
+            'category': obj.role.category.name,
+        }
+        
+        
+        
+        
+
+
 
