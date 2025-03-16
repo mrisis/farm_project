@@ -2,12 +2,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer
-from apps.accounts.models import User, RoleCategory
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer
+from apps.accounts.models import User, RoleCategory,Role
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
-from apps.accounts.filters import UserFilterAdmin
+from apps.accounts.filters import UserFilterAdmin, RoleFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from django.shortcuts import get_object_or_404
@@ -219,5 +219,23 @@ class RoleCategoryDeleteAdminView(APIView):
         role_category.delete()
         return Response({'message': 'Role category deleted successfully'}, status=status.HTTP_200_OK)
     
+
+
+
+class RoleListAdminView(GenericAPIView):
+    serializer_class = RoleListAdminSerializer
+    permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = RoleFilter
+    search_fields = ['name', 'category__name']
+
+    def get(self, request):
+        roles = Role.objects.all()
+        filtered_roles = self.filter_queryset(roles)
+        serializer = self.serializer_class(filtered_roles, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    
+
 
 

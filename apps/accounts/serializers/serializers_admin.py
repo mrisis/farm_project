@@ -1,4 +1,4 @@
-from apps.accounts.models import User, RoleCategory
+from apps.accounts.models import User, RoleCategory, Role
 from rest_framework import serializers
 from apps.locations.models import Province
 from apps.accounts.models import UserAddress
@@ -133,5 +133,26 @@ class RoleCategoryUpdateAdminSerializer(serializers.ModelSerializer):
         model = RoleCategory
         fields = ['id', 'name', 'description',]
 
+
+
+class RoleListAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name', 'category', 'icon']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['icon'] = None
+        data['category'] = instance.category.name
+        if instance.icon:
+            data['icon'] = self.context['request'].build_absolute_uri(instance.icon.url)
+        return data
+
+
+
+    
+
+
+    
 
 

@@ -3,10 +3,11 @@ from .models import Role, User
 
 class RoleFilter(django_filters.FilterSet):
     category = django_filters.CharFilter(field_name='category', lookup_expr='exact')
+    category_name = django_filters.CharFilter(field_name='category__name', lookup_expr='icontains')
 
     class Meta:
         model = Role
-        fields = ['category',]
+        fields = ['category', 'category_name']
 
 
 
