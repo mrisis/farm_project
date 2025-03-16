@@ -83,6 +83,21 @@ class UserUpdateAdminSerializer(serializers.ModelSerializer):
             data['profile_image'] = self.context['request'].build_absolute_uri(instance.profile_image.image.url)
         return data
 
+
+
+class UserCreateAdminSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(write_only=True, required=False)
+    confirm_password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'mobile_number', 'image', 'password', 'confirm_password']
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['confirm_password']:
+            raise serializers.ValidationError({'password': 'Password and confirm password do not match'})
+        return attrs
+    
         
         
         

@@ -1,7 +1,7 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer
 from apps.accounts.models import User
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -11,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from django.shortcuts import get_object_or_404
 from apps.files.models import Asset
+from django.db import transaction
 
 
 class AdminLoginView(GenericAPIView):
@@ -107,4 +108,38 @@ class UserUpdateAdminView(GenericAPIView):
 
 
 
-    
+class UserCreateAdminView(GenericAPIView):
+    serializer_class = UserCreateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        validated_data = serializer.validated_data
+
+        confirm_password = validated_data.pop('confirm_password')
+
+        image = validated_data.pop('image', None)
+
+        user = User(
+            first_name=validated_data.get('first_name'),
+            last_name=validated_data.get('last_name'),
+            email=validated_data.get('email'),
+            mobile_number=validated_data.get('mobile_number'),
+
+        )
+        
+        user.set_password(validated_data.get('password'))
+        user.save()
+
+        if image:
+            asset = Asset.objects.create(owner=user, image=image)
+            user.profile_image = asset
+            user.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        
+        
