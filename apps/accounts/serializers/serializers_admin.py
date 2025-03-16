@@ -1,4 +1,4 @@
-from apps.accounts.models import User, RoleCategory, Role, UserAddress
+from apps.accounts.models import User, RoleCategory, Role, UserAddress, OtpCode
 from rest_framework import serializers
 from apps.locations.models import Province
 from apps.accounts.models import UserAddress
@@ -239,5 +239,11 @@ class UserAddressUpdateAdminSerializer(serializers.ModelSerializer):
 
 
     
+class OtpCodeListAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OtpCode
+        fields = ['id', 'mobile_number', 'otp_code', 'is_verified']
+
+
 
 

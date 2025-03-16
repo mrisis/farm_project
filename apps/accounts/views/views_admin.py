@@ -2,8 +2,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer, UserAddressUpdateAdminSerializer
-from apps.accounts.models import User, RoleCategory,Role, UserAddress
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer, UserAddressUpdateAdminSerializer, OtpCodeListAdminSerializer
+from apps.accounts.models import User, RoleCategory,Role, UserAddress, OtpCode
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
@@ -360,3 +360,15 @@ class UserAddressDeleteAdminView(APIView):
         user_address = get_object_or_404(UserAddress, pk=pk)
         user_address.delete()
         return Response({'message': 'User address deleted successfully'}, status=status.HTTP_200_OK)
+    
+
+
+
+class OtpCodeListAdminView(GenericAPIView):
+    serializer_class = OtpCodeListAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        otp_codes = OtpCode.objects.all()
+        serializer = self.serializer_class(otp_codes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

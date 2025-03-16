@@ -70,6 +70,9 @@ urlpatterns = [
                 path('user-address/create/', views_admin.UserAddressCreateAdminView.as_view(), name='user_address_create'),
                 path('user-address/<int:pk>/update/', views_admin.UserAddressUpdateAdminView.as_view(), name='user_address_update'),
                 path('user-address/<int:pk>/delete/', views_admin.UserAddressDeleteAdminView.as_view(), name='user_address_delete'),
+
+                # otp code admin urls
+                path('otp-code/list/', views_admin.OtpCodeListAdminView.as_view(), name='otp_code_list'),
             ]))
         ])),
         
