@@ -114,6 +114,12 @@ class RoleCategoryListAdminSerializer(serializers.ModelSerializer):
          data = super().to_representation(instance)
          data['description'] = data['description'][:70]
          return data
+    
+
+class RoleCategoryDetailAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoleCategory
+        fields = ['id', 'name', 'description',]
 
 
 
