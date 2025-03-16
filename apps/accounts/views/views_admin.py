@@ -2,12 +2,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer, UserAddressUpdateAdminSerializer, OtpCodeListAdminSerializer
-from apps.accounts.models import User, RoleCategory,Role, UserAddress, OtpCode
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer, UserAddressUpdateAdminSerializer, OtpCodeListAdminSerializer, UserRoleListAdminSerializer
+from apps.accounts.models import User, RoleCategory,Role, UserAddress, OtpCode, UserRole
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
-from apps.accounts.filters import UserFilterAdmin, RoleFilter, UserAddressFilterAdmin
+from apps.accounts.filters import UserFilterAdmin, RoleFilter, UserAddressFilterAdmin, UserRoleFilterAdmin
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from django.shortcuts import get_object_or_404
@@ -372,3 +372,24 @@ class OtpCodeListAdminView(GenericAPIView):
         otp_codes = OtpCode.objects.all()
         serializer = self.serializer_class(otp_codes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+class UserRoleListAdminView(GenericAPIView):
+    serializer_class = UserRoleListAdminSerializer
+    permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = UserRoleFilterAdmin
+    search_fields = ['user__mobile_number', 'role__name', 'user__first_name', 'user__last_name']
+
+
+    def get(self, request):
+        user_roles = UserRole.objects.all()
+        filtered_user_roles = self.filter_queryset(user_roles)
+        serializer = self.serializer_class(filtered_user_roles, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+

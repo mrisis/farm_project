@@ -73,6 +73,9 @@ urlpatterns = [
 
                 # otp code admin urls
                 path('otp-code/list/', views_admin.OtpCodeListAdminView.as_view(), name='otp_code_list'),
+
+                # user role admin urls
+                path('user-role/list/', views_admin.UserRoleListAdminView.as_view(), name='user_role_list'),
             ]))
         ])),
         
