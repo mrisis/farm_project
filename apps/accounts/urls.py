@@ -67,6 +67,7 @@ urlpatterns = [
                 # user address admin urls
                 path('user-address/list/', views_admin.UserAddressListAdminView.as_view(), name='user_address_list'),
                 path('user-address/<int:pk>/detail/', views_admin.UserAddressDetailAdminView.as_view(), name='user_address_detail'),
+                path('user-address/create/', views_admin.UserAddressCreateAdminView.as_view(), name='user_address_create'),
             ]))
         ])),
         

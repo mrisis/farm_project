@@ -2,7 +2,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer
 from apps.accounts.models import User, RoleCategory,Role, UserAddress
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -318,3 +318,24 @@ class UserAddressDetailAdminView(GenericAPIView):
         user_address = get_object_or_404(UserAddress, pk=pk)
         serializer = self.serializer_class(user_address)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+
+class UserAddressCreateAdminView(GenericAPIView):
+    serializer_class = UserAddressCreateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_address = UserAddress(
+            user=serializer.validated_data.get('user'),
+            full_address=serializer.validated_data.get('full_address'),
+            lat=serializer.validated_data.get('lat'),
+            lng=serializer.validated_data.get('lng'),
+            province=serializer.validated_data.get('province'),
+            city=serializer.validated_data.get('city'),
+        )
+        user_address.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

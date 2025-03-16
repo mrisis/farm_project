@@ -222,7 +222,15 @@ class UserAddressDetailAdminSerializer(serializers.ModelSerializer):
         }
 
 
-    
+
+
+class UserAddressCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = ['id', 'user', 'full_address', 'lat', 'lng', 'province', 'city']
+
+
+
 
 
     
