@@ -61,6 +61,7 @@ urlpatterns = [
                 path('role-list/', views_admin.RoleListAdminView.as_view(), name='role_list'),
                 path('role-detail/<int:pk>/', views_admin.RoleDetailAdminView.as_view(), name='role_detail'),
                 path('role-create/', views_admin.RoleCreateAdminView.as_view(), name='role_create'),
+                path('role-update/<int:pk>/', views_admin.RoleUpdateAdminView.as_view(), name='role_update'),
             ]))
         ])),
         

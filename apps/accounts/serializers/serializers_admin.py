@@ -166,6 +166,20 @@ class RoleCreateAdminSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'category', 'icon']
 
 
+class RoleUpdateAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name', 'description', 'category', 'icon']
+
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['icon'] = self.get_image_url(instance, image_field='icon', default=None)
+        return data
+
+    
+
+
 
 
     

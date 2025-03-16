@@ -2,7 +2,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer
+from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, UserListAdminSerializer, UserDetailAdminSerializer, UserUpdateAdminSerializer, UserCreateAdminSerializer, RoleCategoryListAdminSerializer, RoleCategoryDetailAdminSerializer, RoleCategoryCreateAdminSerializer, RoleCategoryUpdateAdminSerializer, RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer
 from apps.accounts.models import User, RoleCategory,Role
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -267,3 +267,17 @@ class RoleCreateAdminView(GenericAPIView):
         )
         role.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+class RoleUpdateAdminView(GenericAPIView):
+    serializer_class = RoleUpdateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, pk):
+        role = get_object_or_404(Role, pk=pk)
+        serializer = self.serializer_class(role, data=request.data, partial=True, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
