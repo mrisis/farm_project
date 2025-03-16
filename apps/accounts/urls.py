@@ -42,6 +42,7 @@ urlpatterns = [
             path('admin/', include([
                 path('login/', views_admin.AdminLoginView.as_view(), name='admin_login'),
                 path('user-list/', views_admin.UserListAdminView.as_view(), name='user_list'),
+                path('user-count/', views_admin.UserCountAdminView.as_view(), name='user_count'),
                 path('user-detail/<int:pk>/', views_admin.UserDetailAdminView.as_view(), name='user_detail'),
                 path('user-update/<int:pk>/', views_admin.UserUpdateAdminView.as_view(), name='user_update'),
                 path('user-create/', views_admin.UserCreateAdminView.as_view(), name='user_create'),

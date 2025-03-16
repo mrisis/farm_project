@@ -72,6 +72,13 @@ class UserListAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
         
 
+class UserCountAdminView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        count_of_users = User.objects.count()
+        return Response({'count_of_users': count_of_users}, status=status.HTTP_200_OK)
+
 
 class UserDetailAdminView(GenericAPIView):
     serializer_class = UserDetailAdminSerializer

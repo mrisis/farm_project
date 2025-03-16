@@ -26,8 +26,9 @@ class UserListAdminSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['profile_image'] = None
         if instance.profile_image:
-            data['profile_image'] = self.context['request'].build_absolute_uri(instance.profile_image.url)
+            data['profile_image'] = self.context['request'].build_absolute_uri(instance.profile_image.image.url)
         return data
+
 
 
 
@@ -98,6 +99,7 @@ class UserCreateAdminSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'password': 'Password and confirm password do not match'})
         return attrs
     
+
         
         
         
