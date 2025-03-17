@@ -1,6 +1,6 @@
 from django.urls import path, include
 from apps.posts.views import views_user
-
+from apps.posts.views import views_admin
 app_name = 'posts'
 
 urlpatterns = [
@@ -34,6 +34,16 @@ urlpatterns = [
             path('favorite-post/add-or-remove/', views_user.PostAddOrRemoveToFavoriteUserApiView.as_view(), name='add-to-favorite'),
             path('favorite-post/list/', views_user.MyFavoritePostListUserApiView.as_view(), name='favorite-post-list'),
             path('favorite-post/<int:pk>/detail/', views_user.MyFavoritePostDetailUserApiView.as_view(), name='favorite-post-detail'),
+
+            # admin urls
+            path('admin/', include([
+                # post admin urls
+                path('posts-list/', views_admin.PostListAdminView.as_view(), name='list-posts-admin'),
+                path('post-detail/<int:pk>/', views_admin.PostDetailAdminView.as_view(), name='post-detail-admin'),
+                path('post-create/', views_admin.PostCreateAdminView.as_view(), name='create-post-admin'),
+                path('post-update/<int:pk>/', views_admin.PostUpdateAdminView.as_view(), name='post-update-admin'),
+                path('post-delete/<int:pk>/', views_admin.PostDeleteAdminView.as_view(), name='post-delete-admin'),
+            ]))
 
 
 
