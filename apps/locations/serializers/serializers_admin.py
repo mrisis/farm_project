@@ -15,3 +15,20 @@ class ProvinceDetailAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code"]
 
 
+
+
+class ProvinceCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = ["id", "name", "code"]
+
+
+class ProvinceUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = ["id", "name", "code"]
+
+
+
+
+

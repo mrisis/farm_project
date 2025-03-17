@@ -1,5 +1,5 @@
 from rest_framework.generics import GenericAPIView
-from apps.locations.serializers.serializers_admin import ProvinceListAdminSerializer, ProvinceDetailAdminSerializer
+from apps.locations.serializers.serializers_admin import ProvinceListAdminSerializer, ProvinceDetailAdminSerializer, ProvinceCreateAdminSerializer, ProvinceUpdateAdminSerializer
 from apps.locations.models import Province
 from rest_framework.response import Response
 from rest_framework import status   
@@ -31,3 +31,32 @@ class ProvinceDetailAdminView(GenericAPIView):
         
         
         
+class ProvinceCreateAdminView(GenericAPIView):
+    serializer_class = ProvinceCreateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        province = Province(
+            name=serializer.validated_data.get("name"),
+            code=serializer.validated_data.get("code"),
+        )
+        province.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    
+
+class ProvinceUpdateAdminView(GenericAPIView):
+    serializer_class = ProvinceUpdateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, pk):
+        province = get_object_or_404(Province, pk=pk)
+        serializer = self.get_serializer(province, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+    
