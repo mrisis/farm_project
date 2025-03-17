@@ -1,14 +1,14 @@
 from rest_framework.generics import GenericAPIView
-from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, PostCreateAdminSerializer, PostUpdateAdminSerializer
+from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, PostCategoryDetailAdminSerializer, PostCategoryCreateAdminSerializer, PostCategoryUpdateAdminSerializer
 from rest_framework.permissions import IsAdminUser
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
-from apps.posts.models import Post, PostImage
+from apps.posts.models import Post, PostImage, PostCategory
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
-from apps.posts.filters import PostFilter
+from apps.posts.filters import PostFilter, PostCategoryFilterSet
 
 
 class PostListAdminView(GenericAPIView):
@@ -100,3 +100,75 @@ class PostDeleteAdminView(GenericAPIView):
             image.delete()
         post.delete()
         return Response({"message": "Post Deleted Successfully"}, status=status.HTTP_200_OK)
+    
+
+
+class PostCategoryListAdminView(GenericAPIView):
+    serializer_class = PostCategoryListAdminSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = PostCategoryFilterSet
+    search_fields = ['name', 'parent__name']
+
+    def get(self, request):
+        categories = PostCategory.objects.all()
+        categories_qs = self.filter_queryset(categories)
+        page = self.paginate_queryset(categories_qs)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+    
+
+
+
+class PostCategoryDetailAdminView(GenericAPIView):
+    serializer_class = PostCategoryDetailAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        category = get_object_or_404(PostCategory, pk=pk)
+        serializer = self.get_serializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class PostCategoryCreateAdminView(GenericAPIView):
+    serializer_class = PostCategoryCreateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        post_category = PostCategory(
+            name=serializer.validated_data.get('name'),
+            icon=serializer.validated_data.get('icon'),
+            description=serializer.validated_data.get('description'),
+            parent=serializer.validated_data.get('parent'),
+            slug=serializer.validated_data.get('slug'),
+        )
+        post_category.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+class PostCategoryUpdateAdminView(GenericAPIView):
+    serializer_class = PostCategoryUpdateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, pk):
+        category = get_object_or_404(PostCategory, pk=pk)
+        serializer = self.get_serializer(category, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class PostCategoryDeleteAdminView(GenericAPIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        category = get_object_or_404(PostCategory, pk=pk)
+        category.delete()
+        return Response({"message": "Post Category Deleted Successfully"}, status=status.HTTP_200_OK)

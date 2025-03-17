@@ -27,10 +27,11 @@ class PostFilter(django_filters.FilterSet):
 
 class PostCategoryFilterSet(django_filters.FilterSet):
     parent = django_filters.BooleanFilter(method="filter_parent")
+    parent_name = django_filters.CharFilter(field_name='parent__name', lookup_expr='icontains')
 
     class Meta:
         model = post_models.PostCategory
-        fields = []
+        fields = ['parent', 'parent_name']
 
     def filter_parent(self, qs, name, value):
         if value:

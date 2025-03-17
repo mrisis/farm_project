@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from apps.posts.models import Post, PostImage
+from apps.posts.models import Post, PostImage, PostCategory
+from apps.posts.mixins import ImageUrlMixin
 
 
 class PostListAdminSerializer(serializers.ModelSerializer):
@@ -56,4 +57,39 @@ class PostUpdateAdminSerializer(serializers.ModelSerializer):
 
         
     
+
+class PostCategoryListAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
+    class Meta:
+        model = PostCategory
+        fields = ["id", "name", "icon", "description", "parent"]
+
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['icon'] = self.get_image_url(instance, 'icon')
+        data['parent'] = instance.parent.name if instance.parent else 'بدون دسته بندی پدر'
+        data['description'] = instance.description[:50] + '...' if len(instance.description) > 50 else instance.description
+        return data
+
+
+
+class PostCategoryDetailAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostCategory
+        fields = ["id", "name", "icon", "description", "parent", "slug"]
+
+
+
+class PostCategoryCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostCategory
+        fields = ["id", "name", "icon", "description", "parent", "slug"]
+
+
+class PostCategoryUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostCategory
+        fields = ["id", "name", "icon", "description", "parent", "slug"]
+
+
 
