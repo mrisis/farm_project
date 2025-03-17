@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.posts.models import Post, PostImage, PostCategory
+from apps.posts.models import Post, PostImage, PostCategory, PostAddress
 from apps.posts.mixins import ImageUrlMixin
 from django.utils import timezone
 from datetime import timedelta
@@ -145,6 +145,44 @@ class PostImageCreateAdminSerializer(serializers.ModelSerializer):
         if recent_images.count() >= 100:
             raise serializers.ValidationError("You can only upload 100 images per hour.")
         return attrs
+
+
+
+
+class PostAddressListAdminSerializer(serializers.ModelSerializer):
+    author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
+    province = serializers.StringRelatedField(source="province.name")
+    post = serializers.StringRelatedField(source="post.title")
+    class Meta:
+        model = PostAddress
+        fields = ["id", "post", "province", "author_post_mobile_number"]
+
+
+class PostAddressDetailAdminSerializer(serializers.ModelSerializer):
+    post = serializers.StringRelatedField(source="post.title")
+    province = serializers.StringRelatedField(source="province.name")
+    city = serializers.StringRelatedField(source="city.name")
+    author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
+    class Meta:
+        model = PostAddress
+        fields = ["id", "post", "province", "city", "lat", "lng", "full_address", "postal_code", "author_post_mobile_number"]
+
+
+
+class PostAddressCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostAddress
+        fields = ["id", "post", "province", "city", "lat", "lng", "full_address", "postal_code"]
+
+
+class PostAddressUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostAddress
+        fields = ["id", "post", "province", "city", "lat", "lng", "full_address", "postal_code"]
+
+
+
+
 
 
 

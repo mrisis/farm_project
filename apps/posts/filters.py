@@ -48,3 +48,14 @@ class PostImageFilterSet(django_filters.FilterSet):
     class Meta:
         model = post_models.PostImage
         fields = ['post_title', 'author_post_mobile_number']
+
+
+
+
+class PostAddressFilterSet(django_filters.FilterSet):
+    post_title = django_filters.CharFilter(field_name='post__title', lookup_expr='icontains')
+    author_post_mobile_number = django_filters.CharFilter(field_name='post__author__mobile_number', lookup_expr='icontains')
+
+    class Meta:
+        model = post_models.PostAddress
+        fields = ['post_title', 'author_post_mobile_number']

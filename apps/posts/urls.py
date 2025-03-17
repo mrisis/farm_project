@@ -56,6 +56,13 @@ urlpatterns = [
                 path('image-detail/<int:pk>/', views_admin.PostImageDetailAdminView.as_view(), name='image-detail-admin'),
                 path('image-create/', views_admin.PostImageCreateAdminView.as_view(), name='image-create-admin'),
                 path('image-delete/<int:pk>/', views_admin.PostImageDeleteAdminView.as_view(), name='image-delete-admin'),
+
+                # post address admin urls
+                path('post-addresses-list/', views_admin.PostAddressListAdminView.as_view(), name='post-addresses-list-admin'),
+                path('post-address-detail/<int:pk>/', views_admin.PostAddressDetailAdminView.as_view(), name='post-address-detail-admin'),
+                path('post-address-create/', views_admin.PostAddressCreateAdminView.as_view(), name='post-address-create-admin'),
+                path('post-address-update/<int:pk>/', views_admin.PostAddressUpdateAdminView.as_view(), name='post-address-update-admin'),
+                path('post-address-delete/<int:pk>/', views_admin.PostAddressDeleteAdminView.as_view(), name='post-address-delete-admin'),
             ]))
 
 
