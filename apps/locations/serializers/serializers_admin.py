@@ -30,5 +30,37 @@ class ProvinceUpdateAdminSerializer(serializers.ModelSerializer):
 
 
 
+class CityListAdminSerializer(serializers.ModelSerializer):
+    province = serializers.StringRelatedField(source="province.name")
+    class Meta:
+        model = City
+        fields = ["id", "name", "province"]
+
+
+
+class CityDetailAdminSerializer(serializers.ModelSerializer):
+    province = serializers.StringRelatedField(source="province.name")
+    class Meta:
+        model = City
+        fields = ["id", "name", "province"]
+
+
+class CityCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ["id", "name", "province"]
+
+
+class CityUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ["id", "name", "province"]
+
+
+
+
+
+
+
 
 

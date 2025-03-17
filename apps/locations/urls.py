@@ -25,6 +25,13 @@ urlpatterns = [
                 path('province-create/', views_admin.ProvinceCreateAdminView.as_view(), name='province-create-admin'),
                 path('province-update/<int:pk>/', views_admin.ProvinceUpdateAdminView.as_view(), name='province-update-admin'),
                 path('province-delete/<int:pk>/', views_admin.ProvinceDeleteAdminView.as_view(), name='province-delete-admin'),
+
+                # city admin urls
+                path('city-list/', views_admin.CityListAdminView.as_view(), name='city-list-admin'),
+                path('city-detail/<int:pk>/', views_admin.CityDetailAdminView.as_view(), name='city-detail-admin'),
+                path('city-create/', views_admin.CityCreateAdminView.as_view(), name='city-create-admin'),
+                path('city-update/<int:pk>/', views_admin.CityUpdateAdminView.as_view(), name='city-update-admin'),
+                path('city-delete/<int:pk>/', views_admin.CityDeleteAdminView.as_view(), name='city-delete-admin'),
             ]))
     
 
