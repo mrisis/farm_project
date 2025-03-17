@@ -1,5 +1,6 @@
 from django.urls import path, include
 from apps.locations.views import views_user
+from apps.locations.views import views_admin
 
 app_name = 'locations'
 
@@ -15,6 +16,13 @@ urlpatterns = [
 
             path('city/list/', views_user.CityListApiView.as_view(), name='city-list'),
 
+            # admin urls
+            path("admin/", include([
+
+                # province admin urls
+                path('province-list/', views_admin.ProvinceListAdminView.as_view(), name='province-list-admin'),
+            ]))
+    
 
         ]))    
     ]))
