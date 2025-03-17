@@ -50,6 +50,12 @@ urlpatterns = [
                 path('category-create/', views_admin.PostCategoryCreateAdminView.as_view(), name='category-create-admin'),
                 path('category-update/<int:pk>/', views_admin.PostCategoryUpdateAdminView.as_view(), name='category-update-admin'),
                 path('category-delete/<int:pk>/', views_admin.PostCategoryDeleteAdminView.as_view(), name='category-delete-admin'),
+
+                # post image admin urls
+                path('images-list/', views_admin.PostImageListAdminView.as_view(), name='images-list-admin'),
+                path('image-detail/<int:pk>/', views_admin.PostImageDetailAdminView.as_view(), name='image-detail-admin'),
+                path('image-create/', views_admin.PostImageCreateAdminView.as_view(), name='image-create-admin'),
+                path('image-delete/<int:pk>/', views_admin.PostImageDeleteAdminView.as_view(), name='image-delete-admin'),
             ]))
 
 

@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from apps.posts.models import Post, PostImage, PostCategory
 from apps.posts.mixins import ImageUrlMixin
+from django.utils import timezone
+from datetime import timedelta
 
 
 class PostListAdminSerializer(serializers.ModelSerializer):
@@ -90,6 +92,59 @@ class PostCategoryUpdateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostCategory
         fields = ["id", "name", "icon", "description", "parent", "slug"]
+
+
+
+
+class PostImageListAdminSerializer(serializers.ModelSerializer):
+    post = serializers.StringRelatedField(source="post.title")
+    author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
+    class Meta:
+        model = PostImage
+        fields = ["id", "post", "asset", "caption", "author_post_mobile_number"]
+
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['caption'] = instance.caption[:50] + '...' if instance.caption else 'بدون عنوان'
+        return data
+
+
+
+class PostImageDetailAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
+    author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
+    class Meta:
+        model = PostImage
+        fields = ["id", "post", "asset", "caption", "author_post_mobile_number"]
+
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['asset'] = self.get_image_url(instance, 'asset')
+        return data
+
+
+class PostImageCreateAdminSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(write_only=True, required=True)
+    mobile_number = serializers.CharField(write_only=True, required=True)
+    class Meta:
+        model = PostImage
+        fields = ["id", "post", "image", "caption", "mobile_number"]
+        
+        extra_kwargs = {
+            'post': {'required': True},
+            }
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+
+        recent_images = PostImage.objects.filter(
+            post__isnull=True,
+            created_at__lte=timezone.now() - timedelta(minutes=60)
+        )
+        if recent_images.count() >= 100:
+            raise serializers.ValidationError("You can only upload 100 images per hour.")
+        return attrs
 
 
 

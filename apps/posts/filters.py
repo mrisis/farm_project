@@ -37,3 +37,14 @@ class PostCategoryFilterSet(django_filters.FilterSet):
         if value:
             return qs.filter(parent__isnull=True)
         return qs.filter(parent__isnull=False)
+    
+
+
+
+class PostImageFilterSet(django_filters.FilterSet):
+    post_title = django_filters.CharFilter(field_name='post__title', lookup_expr='icontains')
+    author_post_mobile_number = django_filters.CharFilter(field_name='post__author__mobile_number', lookup_expr='icontains')
+
+    class Meta:
+        model = post_models.PostImage
+        fields = ['post_title', 'author_post_mobile_number']

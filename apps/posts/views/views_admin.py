@@ -1,14 +1,16 @@
 from rest_framework.generics import GenericAPIView
-from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, PostCategoryDetailAdminSerializer, PostCategoryCreateAdminSerializer, PostCategoryUpdateAdminSerializer
+from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, PostCategoryDetailAdminSerializer, PostCategoryCreateAdminSerializer, PostCategoryUpdateAdminSerializer, PostImageListAdminSerializer, PostImageDetailAdminSerializer, PostImageCreateAdminSerializer
 from rest_framework.permissions import IsAdminUser
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from apps.posts.models import Post, PostImage, PostCategory
+from apps.files.models import Asset
+from apps.accounts.models import User
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
-from apps.posts.filters import PostFilter, PostCategoryFilterSet
+from apps.posts.filters import PostFilter, PostCategoryFilterSet, PostImageFilterSet
 
 
 class PostListAdminView(GenericAPIView):
@@ -172,3 +174,83 @@ class PostCategoryDeleteAdminView(GenericAPIView):
         category = get_object_or_404(PostCategory, pk=pk)
         category.delete()
         return Response({"message": "Post Category Deleted Successfully"}, status=status.HTTP_200_OK)
+    
+
+
+
+class PostImageListAdminView(GenericAPIView):
+    serializer_class = PostImageListAdminSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = PostImageFilterSet
+    search_fields = ['post__title', 'post__author__mobile_number']
+
+    def get(self, request):
+        images = PostImage.objects.all()
+        images_qs = self.filter_queryset(images)
+        page = self.paginate_queryset(images_qs)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+
+class PostImageDetailAdminView(GenericAPIView):
+    serializer_class = PostImageDetailAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        image = get_object_or_404(PostImage, pk=pk)
+        serializer = self.get_serializer(image)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class PostImageCreateAdminView(GenericAPIView):
+    serializer_class = PostImageCreateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        image = serializer.validated_data.get('image', None)
+        mobile_number = serializer.validated_data.get('mobile_number', None)
+        author = get_object_or_404(User, mobile_number=mobile_number)
+
+        post_id = serializer.validated_data.get('post').id
+        post = Post.objects.get(pk = post_id)
+        if post.author.mobile_number != author.mobile_number:
+            return Response({"detail": "You are not the author of this post."}, status=status.HTTP_400_BAD_REQUEST)
+
+        asset = Asset(
+            title='post image',
+            owner=author,
+            image=image,
+        )
+        asset.save()
+
+        post_image = PostImage(
+            asset=asset,
+            caption=serializer.validated_data.get('caption'),
+            post=serializer.validated_data.get('post'),
+        )
+        post_image.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+
+
+class PostImageDeleteAdminView(GenericAPIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        post_image = get_object_or_404(PostImage, pk=pk)
+        if post_image.asset is not None:
+            post_image.asset.delete()
+        post_image.delete()
+        return Response({"message": "Post Image Deleted Successfully"}, status=status.HTTP_200_OK)
+            
+        
+        
