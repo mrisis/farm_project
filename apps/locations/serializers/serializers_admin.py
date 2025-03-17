@@ -8,3 +8,10 @@ class ProvinceListAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code"]
 
 
+
+class ProvinceDetailAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = ["id", "name", "code"]
+
+

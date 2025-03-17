@@ -21,6 +21,7 @@ urlpatterns = [
 
                 # province admin urls
                 path('province-list/', views_admin.ProvinceListAdminView.as_view(), name='province-list-admin'),
+                path('province-detail/<int:pk>/', views_admin.ProvinceDetailAdminView.as_view(), name='province-detail-admin'),
             ]))
     
 
