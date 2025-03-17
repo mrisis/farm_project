@@ -24,6 +24,7 @@ urlpatterns = [
                 path('province-detail/<int:pk>/', views_admin.ProvinceDetailAdminView.as_view(), name='province-detail-admin'),
                 path('province-create/', views_admin.ProvinceCreateAdminView.as_view(), name='province-create-admin'),
                 path('province-update/<int:pk>/', views_admin.ProvinceUpdateAdminView.as_view(), name='province-update-admin'),
+                path('province-delete/<int:pk>/', views_admin.ProvinceDeleteAdminView.as_view(), name='province-delete-admin'),
             ]))
     
 

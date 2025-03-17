@@ -59,4 +59,11 @@ class ProvinceUpdateAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     
-    
+
+class ProvinceDeleteAdminView(GenericAPIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        province = get_object_or_404(Province, pk=pk)
+        province.delete()
+        return Response({"message": "Province deleted successfully"}, status=status.HTTP_200_OK)
