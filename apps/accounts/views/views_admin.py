@@ -168,11 +168,13 @@ class UserDeleteAdminView(APIView):
 class RoleCategoryListAdminView(GenericAPIView):
     serializer_class = RoleCategoryListAdminSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
 
     def get(self, request):
         role_categories = RoleCategory.objects.all()
-        serializer = self.serializer_class(role_categories, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        page = self.paginate_queryset(role_categories)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class RoleCategoryDetailAdminView(GenericAPIView):
