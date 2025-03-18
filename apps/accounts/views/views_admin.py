@@ -377,11 +377,14 @@ class UserAddressDeleteAdminView(APIView):
 class OtpCodeListAdminView(GenericAPIView):
     serializer_class = OtpCodeListAdminSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
 
     def get(self, request):
         otp_codes = OtpCode.objects.all()
-        serializer = self.serializer_class(otp_codes, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        page = self.paginate_queryset(otp_codes)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+        
 
 
 
