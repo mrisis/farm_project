@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment
+from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment, Rating, FavoritePost
 from apps.posts.mixins import ImageUrlMixin
 from django.utils import timezone
 from datetime import timedelta
@@ -238,5 +238,54 @@ class PostCommentUpdateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["id", "post", "author", "text", "parent"]
+
+
+
+class PostRatingListAdminSerializer(serializers.ModelSerializer):
+    post = serializers.StringRelatedField(source="post.title")
+    author = serializers.StringRelatedField(source="author.mobile_number")
+    class Meta:
+        model = Rating
+        fields = ["id", "post", "author", "score"]
+
+
+class PostRatingDetailAdminSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+    post = serializers.SerializerMethodField()
+    class Meta:
+        model = Rating
+        fields = ["id", "post", "author", "score"]
+
+
+    def get_author(self, obj):
+        return {
+            "id": obj.author.id,
+            "mobile_number": obj.author.mobile_number,
+            "first_name": obj.author.first_name,
+            "last_name": obj.author.last_name,
+        }
+    
+    def get_post(self, obj):
+        return {
+            "id": obj.post.id,
+            "title": obj.post.title,
+            "category": obj.post.category.name,
+        }
+
+
+
+class PostRatingCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ["id", "post", "author", "score"]
+
+
+
+
+
+class PostRatingUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ["id", "post", "author", "score"]
 
 

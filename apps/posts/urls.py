@@ -71,6 +71,13 @@ urlpatterns = [
                 path('comment-create/', views_admin.PostCommentCreateAdminView.as_view(), name='comment-create-admin'),
                 path('comment-update/<int:pk>/', views_admin.PostCommentUpdateAdminView.as_view(), name='comment-update-admin'),
                 path('comment-delete/<int:pk>/', views_admin.PostCommentDeleteAdminView.as_view(), name='comment-delete-admin'),
+
+                # post rating admin urls
+                path('ratings-list/', views_admin.PostRatingListAdminView.as_view(), name='ratings-list-admin'),
+                path('rating-detail/<int:pk>/', views_admin.PostRatingDetailAdminView.as_view(), name='rating-detail-admin'),
+                path('rating-create/', views_admin.PostRatingCreateAdminView.as_view(), name='rating-create-admin'),
+                path('rating-update/<int:pk>/', views_admin.PostRatingUpdateAdminView.as_view(), name='rating-update-admin'),
+                path('rating-delete/<int:pk>/', views_admin.PostRatingDeleteAdminView.as_view(), name='rating-delete-admin'),
             ]))
 
 

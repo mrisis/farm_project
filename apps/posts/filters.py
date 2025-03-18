@@ -73,3 +73,15 @@ class CommentFilterSet(django_filters.FilterSet):
     class Meta:
         model = post_models.Comment
         fields = ['post_title', 'author_mobile_number', 'author_first_name', 'author_last_name', 'post_category_name']
+
+
+
+
+class RatingFilterSet(django_filters.FilterSet):
+    post_title = django_filters.CharFilter(field_name='post__title', lookup_expr='icontains')
+    author_mobile_number = django_filters.CharFilter(field_name='author__mobile_number', lookup_expr='icontains')
+    post_category_name = django_filters.CharFilter(field_name='post__category__name', lookup_expr='icontains')
+
+    class Meta:
+        model = post_models.Rating
+        fields = ['post_title', 'author_mobile_number', 'post_category_name']
