@@ -230,15 +230,17 @@ class RoleCategoryDeleteAdminView(APIView):
 class RoleListAdminView(GenericAPIView):
     serializer_class = RoleListAdminSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = RoleFilter
     search_fields = ['name', 'category__name']
 
     def get(self, request):
         roles = Role.objects.all()
-        filtered_roles = self.filter_queryset(roles)
-        serializer = self.serializer_class(filtered_roles, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        roles_qs = self.filter_queryset(roles)
+        page = self.paginate_queryset(roles_qs)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
         
     
 
