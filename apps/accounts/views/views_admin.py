@@ -67,9 +67,12 @@ class UserListAdminView(GenericAPIView):
 
     def get(self, request):
         users = User.objects.all()
-        filtered_users = self.filter_queryset(users)
-        serializer = self.serializer_class(filtered_users, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        users_qs = self.filter_queryset(users)
+        page = self.paginate_queryset(users_qs)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+        
         
 
 class UserCountAdminView(APIView):
