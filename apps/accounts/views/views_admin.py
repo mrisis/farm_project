@@ -392,6 +392,7 @@ class OtpCodeListAdminView(GenericAPIView):
 class UserRoleListAdminView(GenericAPIView):
     serializer_class = UserRoleListAdminSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = UserRoleFilterAdmin
     search_fields = ['user__mobile_number', 'role__name', 'user__first_name', 'user__last_name']
@@ -399,9 +400,11 @@ class UserRoleListAdminView(GenericAPIView):
 
     def get(self, request):
         user_roles = UserRole.objects.all()
-        filtered_user_roles = self.filter_queryset(user_roles)
-        serializer = self.serializer_class(filtered_user_roles, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        user_roles_qs = self.filter_queryset(user_roles)
+        page = self.paginate_queryset(user_roles_qs)
+        serializer = self.get_serializer(page, many=True, context={'request': request})
+        return self.get_paginated_response(serializer.data)
+        
 
 
 
