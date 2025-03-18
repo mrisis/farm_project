@@ -63,6 +63,14 @@ urlpatterns = [
                 path('post-address-create/', views_admin.PostAddressCreateAdminView.as_view(), name='post-address-create-admin'),
                 path('post-address-update/<int:pk>/', views_admin.PostAddressUpdateAdminView.as_view(), name='post-address-update-admin'),
                 path('post-address-delete/<int:pk>/', views_admin.PostAddressDeleteAdminView.as_view(), name='post-address-delete-admin'),
+
+
+                # post comment admin urls
+                path('comments-list/', views_admin.PostCommentListAdminView.as_view(), name='comments-list-admin'),
+                path('comment-detail/<int:pk>/', views_admin.PostCommentDetailAdminView.as_view(), name='comment-detail-admin'),
+                path('comment-create/', views_admin.PostCommentCreateAdminView.as_view(), name='comment-create-admin'),
+                path('comment-update/<int:pk>/', views_admin.PostCommentUpdateAdminView.as_view(), name='comment-update-admin'),
+                path('comment-delete/<int:pk>/', views_admin.PostCommentDeleteAdminView.as_view(), name='comment-delete-admin'),
             ]))
 
 

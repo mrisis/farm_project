@@ -1,8 +1,8 @@
 from rest_framework.generics import GenericAPIView
-from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, PostCategoryDetailAdminSerializer, PostCategoryCreateAdminSerializer, PostCategoryUpdateAdminSerializer, PostImageListAdminSerializer, PostImageDetailAdminSerializer, PostImageCreateAdminSerializer, PostAddressListAdminSerializer, PostAddressDetailAdminSerializer, PostAddressCreateAdminSerializer, PostAddressUpdateAdminSerializer
+from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, PostCategoryDetailAdminSerializer, PostCategoryCreateAdminSerializer, PostCategoryUpdateAdminSerializer, PostImageListAdminSerializer, PostImageDetailAdminSerializer, PostImageCreateAdminSerializer, PostAddressListAdminSerializer, PostAddressDetailAdminSerializer, PostAddressCreateAdminSerializer, PostAddressUpdateAdminSerializer, PostCommentListAdminSerializer, PostCommentDetailAdminSerializer, PostCommentCreateAdminSerializer, PostCommentUpdateAdminSerializer
 from rest_framework.permissions import IsAdminUser
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
-from apps.posts.models import Post, PostImage, PostCategory, PostAddress
+from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment
 from apps.files.models import Asset
 from apps.accounts.models import User
 from rest_framework import status
@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
-from apps.posts.filters import PostFilter, PostCategoryFilterSet, PostImageFilterSet, PostAddressFilterSet
+from apps.posts.filters import PostFilter, PostCategoryFilterSet, PostImageFilterSet, PostAddressFilterSet, CommentFilterSet
 
 
 class PostListAdminView(GenericAPIView):
@@ -333,3 +333,75 @@ class PostAddressDeleteAdminView(GenericAPIView):
         address = get_object_or_404(PostAddress, pk=pk)
         address.delete()
         return Response({"message": "Post Address Deleted Successfully"}, status=status.HTTP_200_OK)
+    
+
+
+
+class PostCommentListAdminView(GenericAPIView):
+    serializer_class = PostCommentListAdminSerializer
+    permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = CommentFilterSet
+    search_fields = ['post__title', 'author__mobile_number']
+
+    def get(self, request):
+        comments = Comment.objects.all()
+        comments_qs = self.filter_queryset(comments)
+        page = self.paginate_queryset(comments_qs)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+    
+
+
+
+class PostCommentDetailAdminView(GenericAPIView):
+    serializer_class = PostCommentDetailAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        serializer = self.get_serializer(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class PostCommentCreateAdminView(GenericAPIView):
+    serializer_class = PostCommentCreateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        comment = Comment(
+            post = serializer.validated_data.get('post'),
+            author = serializer.validated_data.get('author'),
+            text = serializer.validated_data.get('text'),
+            parent = serializer.validated_data.get('parent'),
+        )
+        comment.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    
+
+
+class PostCommentUpdateAdminView(GenericAPIView):
+    serializer_class = PostCommentUpdateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        serializer = self.get_serializer(comment, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+    
+class PostCommentDeleteAdminView(GenericAPIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        comment.delete()
+        return Response({"message": "Post Comment Deleted Successfully"}, status=status.HTTP_200_OK)

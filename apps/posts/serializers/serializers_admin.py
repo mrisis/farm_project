@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.posts.models import Post, PostImage, PostCategory, PostAddress
+from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment
 from apps.posts.mixins import ImageUrlMixin
 from django.utils import timezone
 from datetime import timedelta
@@ -184,5 +184,59 @@ class PostAddressUpdateAdminSerializer(serializers.ModelSerializer):
 
 
 
+class PostCommentListAdminSerializer(serializers.ModelSerializer):
+    post = serializers.StringRelatedField(source="post.title")
+    author = serializers.StringRelatedField(source="author.mobile_number")
+
+    class Meta:
+        model = Comment
+        fields = ["id", "post", "author", "text", "parent"]
+
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['text'] = instance.text[:50] + '...' if instance.text else 'بدون نظر'
+        return data
+
+
+
+class PostCommentDetailAdminSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+    post = serializers.SerializerMethodField()
+    class Meta:
+        model = Comment
+        fields = ["id", "post", "author", "text", "parent"]
+
+
+    def get_author(self, obj):
+        return {
+            "id": obj.author.id,
+            "mobile_number": obj.author.mobile_number,
+            "first_name": obj.author.first_name,
+            "last_name": obj.author.last_name,
+            "email": obj.author.email,
+
+        }
+    
+    def get_post(self, obj):
+        return {
+            "id": obj.post.id,
+            "title": obj.post.title,
+            "category": obj.post.category.name,
+        }
+
+
+
+class PostCommentCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ["id", "post", "author", "text", "parent"]
+
+
+
+class PostCommentUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ["id", "post", "author", "text", "parent"]
 
 
