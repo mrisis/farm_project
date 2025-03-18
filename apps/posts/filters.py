@@ -85,3 +85,15 @@ class RatingFilterSet(django_filters.FilterSet):
     class Meta:
         model = post_models.Rating
         fields = ['post_title', 'author_mobile_number', 'post_category_name']
+
+
+
+
+
+class FavoritePostFilterSet(django_filters.FilterSet):
+    post_title = django_filters.CharFilter(field_name='post__title', lookup_expr='icontains')
+    user_mobile_number = django_filters.CharFilter(field_name='user__mobile_number', lookup_expr='icontains')
+
+    class Meta:
+        model = post_models.FavoritePost
+        fields = ['post_title', 'user_mobile_number']

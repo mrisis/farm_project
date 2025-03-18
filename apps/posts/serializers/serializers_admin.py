@@ -289,3 +289,53 @@ class PostRatingUpdateAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "post", "author", "score"]
 
 
+
+class FavoritePostListAdminSerializer(serializers.ModelSerializer):
+    post = serializers.StringRelatedField(source="post.title")
+    user = serializers.StringRelatedField(source="user.mobile_number")
+    class Meta:
+        model = FavoritePost
+        fields = ["id", "post", "user"]
+
+
+
+class FavoritePostDetailAdminSerializer(serializers.ModelSerializer):
+    post = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+    class Meta:
+        model = FavoritePost
+        fields = ["id", "post", "user"]
+
+    
+    def get_post(self, obj):
+        return {
+            "id": obj.post.id,
+            "title": obj.post.title,
+            "category": obj.post.category.name,
+        }
+        
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "mobile_number": obj.user.mobile_number,
+            "first_name": obj.user.first_name,
+            "last_name": obj.user.last_name,
+        }
+
+
+        
+        
+
+class FavoritePostCreateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoritePost
+        fields = ["id", "post", "user"]
+        
+        
+
+
+class FavoritePostUpdateAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoritePost
+        fields = ["id", "post", "user"]
+

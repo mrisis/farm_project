@@ -78,6 +78,13 @@ urlpatterns = [
                 path('rating-create/', views_admin.PostRatingCreateAdminView.as_view(), name='rating-create-admin'),
                 path('rating-update/<int:pk>/', views_admin.PostRatingUpdateAdminView.as_view(), name='rating-update-admin'),
                 path('rating-delete/<int:pk>/', views_admin.PostRatingDeleteAdminView.as_view(), name='rating-delete-admin'),
+
+                # favorite post admin urls
+                path('favorite-posts-list/', views_admin.FavoritePostListAdminView.as_view(), name='favorite-posts-list-admin'),
+                path('favorite-post-detail/<int:pk>/', views_admin.FavoritePostDetailAdminView.as_view(), name='favorite-post-detail-admin'),
+                path('favorite-post-create/', views_admin.FavoritePostCreateAdminView.as_view(), name='favorite-post-create-admin'),
+                path('favorite-post-update/<int:pk>/', views_admin.FavoritePostUpdateAdminView.as_view(), name='favorite-post-update-admin'),
+                path('favorite-post-delete/<int:pk>/', views_admin.FavoritePostDeleteAdminView.as_view(), name='favorite-post-delete-admin'),
             ]))
 
 
