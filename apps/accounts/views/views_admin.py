@@ -304,15 +304,18 @@ class RoleDeleteAdminView(APIView):
 class UserAddressListAdminView(GenericAPIView):
     serializer_class = UserAddressListAdminSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = UserAddressFilterAdmin
     search_fields = ['user__mobile_number', 'province__name', 'city__name']
 
     def get(self, request):
         user_addresses = UserAddress.objects.all()
-        filtered_user_addresses = self.filter_queryset(user_addresses)
-        serializer = self.serializer_class(filtered_user_addresses, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        user_addresses_qs = self.filter_queryset(user_addresses)
+        page = self.paginate_queryset(user_addresses_qs)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+        
     
 
 
