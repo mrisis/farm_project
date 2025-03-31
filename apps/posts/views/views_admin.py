@@ -1,5 +1,14 @@
 from rest_framework.generics import GenericAPIView
-from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, PostCategoryDetailAdminSerializer, PostCategoryCreateAdminSerializer, PostCategoryUpdateAdminSerializer, PostImageListAdminSerializer, PostImageDetailAdminSerializer, PostImageCreateAdminSerializer, PostAddressListAdminSerializer, PostAddressDetailAdminSerializer, PostAddressCreateAdminSerializer, PostAddressUpdateAdminSerializer, PostCommentListAdminSerializer, PostCommentDetailAdminSerializer, PostCommentCreateAdminSerializer, PostCommentUpdateAdminSerializer, PostRatingListAdminSerializer, PostRatingDetailAdminSerializer, PostRatingCreateAdminSerializer, PostRatingUpdateAdminSerializer, FavoritePostListAdminSerializer, FavoritePostDetailAdminSerializer, FavoritePostCreateAdminSerializer, FavoritePostUpdateAdminSerializer
+from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, \
+    PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, \
+    PostCategoryDetailAdminSerializer, PostCategoryCreateAdminSerializer, PostCategoryUpdateAdminSerializer, \
+    PostImageListAdminSerializer, PostImageDetailAdminSerializer, PostImageCreateAdminSerializer, \
+    PostAddressListAdminSerializer, PostAddressDetailAdminSerializer, PostAddressCreateAdminSerializer, \
+    PostAddressUpdateAdminSerializer, PostCommentListAdminSerializer, PostCommentDetailAdminSerializer, \
+    PostCommentCreateAdminSerializer, PostCommentUpdateAdminSerializer, PostRatingListAdminSerializer, \
+    PostRatingDetailAdminSerializer, PostRatingCreateAdminSerializer, PostRatingUpdateAdminSerializer, \
+    FavoritePostListAdminSerializer, FavoritePostDetailAdminSerializer, FavoritePostCreateAdminSerializer, \
+    FavoritePostUpdateAdminSerializer
 from rest_framework.permissions import IsAdminUser
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment, Rating, FavoritePost
@@ -10,7 +19,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
-from apps.posts.filters import PostFilter, PostCategoryFilterSet, PostImageFilterSet, PostAddressFilterSet, CommentFilterSet, RatingFilterSet, FavoritePostFilterSet
+from apps.posts.filters import PostFilter, PostCategoryFilterSet, PostImageFilterSet, PostAddressFilterSet, \
+    CommentFilterSet, RatingFilterSet, FavoritePostFilterSet
 
 
 class PostListAdminView(GenericAPIView):
@@ -27,8 +37,6 @@ class PostListAdminView(GenericAPIView):
         page = self.paginate_queryset(posts_qs)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-    
-
 
 
 class PostDetailAdminView(GenericAPIView):
@@ -41,7 +49,6 @@ class PostDetailAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 class PostCreateAdminView(GenericAPIView):
     serializer_class = PostCreateAdminSerializer
     permission_classes = [IsAdminUser]
@@ -50,7 +57,7 @@ class PostCreateAdminView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         images_id = serializer.validated_data.get('images_id', None)
-        post_images = PostImage.objects.filter(id__in = images_id)
+        post_images = PostImage.objects.filter(id__in=images_id)
 
         post = Post(
             title=serializer.validated_data.get('title'),
@@ -65,8 +72,6 @@ class PostCreateAdminView(GenericAPIView):
         post.save()
         post.images.set(post_images)
         return Response({"message": "Post Created Successfully"}, status=status.HTTP_201_CREATED)
-
-
 
 
 class PostUpdateAdminView(GenericAPIView):
@@ -102,7 +107,6 @@ class PostDeleteAdminView(GenericAPIView):
             image.delete()
         post.delete()
         return Response({"message": "Post Deleted Successfully"}, status=status.HTTP_200_OK)
-    
 
 
 class PostCategoryListAdminView(GenericAPIView):
@@ -119,8 +123,6 @@ class PostCategoryListAdminView(GenericAPIView):
         page = self.paginate_queryset(categories_qs)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-    
-
 
 
 class PostCategoryDetailAdminView(GenericAPIView):
@@ -131,7 +133,6 @@ class PostCategoryDetailAdminView(GenericAPIView):
         category = get_object_or_404(PostCategory, pk=pk)
         serializer = self.get_serializer(category)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 class PostCategoryCreateAdminView(GenericAPIView):
@@ -152,8 +153,6 @@ class PostCategoryCreateAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
-
 class PostCategoryUpdateAdminView(GenericAPIView):
     serializer_class = PostCategoryUpdateAdminSerializer
     permission_classes = [IsAdminUser]
@@ -166,7 +165,6 @@ class PostCategoryUpdateAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 class PostCategoryDeleteAdminView(GenericAPIView):
     permission_classes = [IsAdminUser]
 
@@ -174,8 +172,6 @@ class PostCategoryDeleteAdminView(GenericAPIView):
         category = get_object_or_404(PostCategory, pk=pk)
         category.delete()
         return Response({"message": "Post Category Deleted Successfully"}, status=status.HTTP_200_OK)
-    
-
 
 
 class PostImageListAdminView(GenericAPIView):
@@ -194,7 +190,6 @@ class PostImageListAdminView(GenericAPIView):
         return self.get_paginated_response(serializer.data)
 
 
-
 class PostImageDetailAdminView(GenericAPIView):
     serializer_class = PostImageDetailAdminSerializer
     permission_classes = [IsAdminUser]
@@ -203,7 +198,6 @@ class PostImageDetailAdminView(GenericAPIView):
         image = get_object_or_404(PostImage, pk=pk)
         serializer = self.get_serializer(image)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 class PostImageCreateAdminView(GenericAPIView):
@@ -219,7 +213,7 @@ class PostImageCreateAdminView(GenericAPIView):
         author = get_object_or_404(User, mobile_number=mobile_number)
 
         post_id = serializer.validated_data.get('post').id
-        post = Post.objects.get(pk = post_id)
+        post = Post.objects.get(pk=post_id)
         if post.author.mobile_number != author.mobile_number:
             return Response({"detail": "You are not the author of this post."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -238,8 +232,6 @@ class PostImageCreateAdminView(GenericAPIView):
         post_image.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-
 
 
 class PostImageDeleteAdminView(GenericAPIView):
@@ -251,8 +243,6 @@ class PostImageDeleteAdminView(GenericAPIView):
             post_image.asset.delete()
         post_image.delete()
         return Response({"message": "Post Image Deleted Successfully"}, status=status.HTTP_200_OK)
-            
-
 
 
 class PostAddressListAdminView(GenericAPIView):
@@ -269,8 +259,6 @@ class PostAddressListAdminView(GenericAPIView):
         page = self.paginate_queryset(addresses_qs)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-    
-
 
 
 class PostAddressDetailAdminView(GenericAPIView):
@@ -281,8 +269,6 @@ class PostAddressDetailAdminView(GenericAPIView):
         address = get_object_or_404(PostAddress, pk=pk)
         serializer = self.get_serializer(address)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-
 
 
 class PostAddressCreateAdminView(GenericAPIView):
@@ -294,23 +280,21 @@ class PostAddressCreateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         post_id = serializer.validated_data.get('post').id
-        post_address = PostAddress.objects.get(pk = post_id)
+        post_address = PostAddress.objects.get(pk=post_id)
         if post_address is not None:
             return Response({"detail": "Post Address already exists."}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         post_address = PostAddress(
-            post = serializer.validated_data.get('post'),
-            province = serializer.validated_data.get('province'),
-            city = serializer.validated_data.get('city'),
-            lat = serializer.validated_data.get('lat'),
-            lng = serializer.validated_data.get('lng'),
-            full_address = serializer.validated_data.get('full_address'),
-            postal_code = serializer.validated_data.get('postal_code'),
+            post=serializer.validated_data.get('post'),
+            province=serializer.validated_data.get('province'),
+            city=serializer.validated_data.get('city'),
+            lat=serializer.validated_data.get('lat'),
+            lng=serializer.validated_data.get('lng'),
+            full_address=serializer.validated_data.get('full_address'),
+            postal_code=serializer.validated_data.get('postal_code'),
         )
         post_address.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-
 
 
 class PostAddressUpdateAdminView(GenericAPIView):
@@ -323,7 +307,6 @@ class PostAddressUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 class PostAddressDeleteAdminView(GenericAPIView):
@@ -333,8 +316,6 @@ class PostAddressDeleteAdminView(GenericAPIView):
         address = get_object_or_404(PostAddress, pk=pk)
         address.delete()
         return Response({"message": "Post Address Deleted Successfully"}, status=status.HTTP_200_OK)
-    
-
 
 
 class PostCommentListAdminView(GenericAPIView):
@@ -351,8 +332,6 @@ class PostCommentListAdminView(GenericAPIView):
         page = self.paginate_queryset(comments_qs)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-    
-
 
 
 class PostCommentDetailAdminView(GenericAPIView):
@@ -365,7 +344,6 @@ class PostCommentDetailAdminView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 class PostCommentCreateAdminView(GenericAPIView):
     serializer_class = PostCommentCreateAdminSerializer
     permission_classes = [IsAdminUser]
@@ -374,15 +352,13 @@ class PostCommentCreateAdminView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         comment = Comment(
-            post = serializer.validated_data.get('post'),
-            author = serializer.validated_data.get('author'),
-            text = serializer.validated_data.get('text'),
-            parent = serializer.validated_data.get('parent'),
+            post=serializer.validated_data.get('post'),
+            author=serializer.validated_data.get('author'),
+            text=serializer.validated_data.get('text'),
+            parent=serializer.validated_data.get('parent'),
         )
         comment.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    
 
 
 class PostCommentUpdateAdminView(GenericAPIView):
@@ -395,9 +371,8 @@ class PostCommentUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    
-    
+
+
 class PostCommentDeleteAdminView(GenericAPIView):
     permission_classes = [IsAdminUser]
 
@@ -405,10 +380,6 @@ class PostCommentDeleteAdminView(GenericAPIView):
         comment = get_object_or_404(Comment, pk=pk)
         comment.delete()
         return Response({"message": "Post Comment Deleted Successfully"}, status=status.HTTP_200_OK)
-    
-
-
-
 
 
 class PostRatingListAdminView(GenericAPIView):
@@ -427,7 +398,6 @@ class PostRatingListAdminView(GenericAPIView):
         return self.get_paginated_response(serializer.data)
 
 
-
 class PostRatingDetailAdminView(GenericAPIView):
     serializer_class = PostRatingDetailAdminSerializer
     permission_classes = [IsAdminUser]
@@ -436,7 +406,6 @@ class PostRatingDetailAdminView(GenericAPIView):
         rating = get_object_or_404(Rating, pk=pk)
         serializer = self.get_serializer(rating)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 
 class PostRatingCreateAdminView(GenericAPIView):
@@ -448,13 +417,12 @@ class PostRatingCreateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         rating = Rating(
-            post = serializer.validated_data.get('post'),
-            author = serializer.validated_data.get('author'),
-            score = serializer.validated_data.get('score'),
+            post=serializer.validated_data.get('post'),
+            author=serializer.validated_data.get('author'),
+            score=serializer.validated_data.get('score'),
         )
         rating.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 
 class PostRatingUpdateAdminView(GenericAPIView):
@@ -467,8 +435,6 @@ class PostRatingUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    
 
 
 class PostRatingDeleteAdminView(GenericAPIView):
@@ -478,9 +444,6 @@ class PostRatingDeleteAdminView(GenericAPIView):
         rating = get_object_or_404(Rating, pk=pk)
         rating.delete()
         return Response({"message": "Post Rating Deleted Successfully"}, status=status.HTTP_200_OK)
-    
-
-
 
 
 class FavoritePostListAdminView(GenericAPIView):
@@ -497,7 +460,6 @@ class FavoritePostListAdminView(GenericAPIView):
         page = self.paginate_queryset(favorite_posts_qs)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-    
 
 
 class FavoritePostDetailAdminView(GenericAPIView):
@@ -508,7 +470,6 @@ class FavoritePostDetailAdminView(GenericAPIView):
         favorite_post = get_object_or_404(FavoritePost, pk=pk)
         serializer = self.get_serializer(favorite_post)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 class FavoritePostCreateAdminView(GenericAPIView):
@@ -519,13 +480,11 @@ class FavoritePostCreateAdminView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         favorite_post = FavoritePost(
-            post = serializer.validated_data.get('post'),
-            user = serializer.validated_data.get('user'),
+            post=serializer.validated_data.get('post'),
+            user=serializer.validated_data.get('user'),
         )
         favorite_post.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-
 
 
 class FavoritePostUpdateAdminView(GenericAPIView):
@@ -538,7 +497,6 @@ class FavoritePostUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 class FavoritePostDeleteAdminView(GenericAPIView):
@@ -548,5 +506,3 @@ class FavoritePostDeleteAdminView(GenericAPIView):
         favorite_post = get_object_or_404(FavoritePost, pk=pk)
         favorite_post.delete()
         return Response({"message": "Favorite Post Deleted Successfully"}, status=status.HTTP_200_OK)
-
-

@@ -1,8 +1,10 @@
 from rest_framework.generics import GenericAPIView
-from apps.locations.serializers.serializers_admin import ProvinceListAdminSerializer, ProvinceDetailAdminSerializer, ProvinceCreateAdminSerializer, ProvinceUpdateAdminSerializer, CityListAdminSerializer, CityDetailAdminSerializer, CityCreateAdminSerializer, CityUpdateAdminSerializer
+from apps.locations.serializers.serializers_admin import ProvinceListAdminSerializer, ProvinceDetailAdminSerializer, \
+    ProvinceCreateAdminSerializer, ProvinceUpdateAdminSerializer, CityListAdminSerializer, CityDetailAdminSerializer, \
+    CityCreateAdminSerializer, CityUpdateAdminSerializer
 from apps.locations.models import Province, City
 from rest_framework.response import Response
-from rest_framework import status   
+from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from django.shortcuts import get_object_or_404
@@ -21,7 +23,6 @@ class ProvinceListAdminView(GenericAPIView):
         page = self.paginate_queryset(provinces)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-    
 
 
 class ProvinceDetailAdminView(GenericAPIView):
@@ -32,9 +33,8 @@ class ProvinceDetailAdminView(GenericAPIView):
         province = get_object_or_404(Province, pk=pk)
         serializer = self.get_serializer(province)
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        
-        
+
+
 class ProvinceCreateAdminView(GenericAPIView):
     serializer_class = ProvinceCreateAdminSerializer
     permission_classes = [IsAdminUser]
@@ -48,8 +48,7 @@ class ProvinceCreateAdminView(GenericAPIView):
         )
         province.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    
+
 
 class ProvinceUpdateAdminView(GenericAPIView):
     serializer_class = ProvinceUpdateAdminSerializer
@@ -61,8 +60,7 @@ class ProvinceUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    
+
 
 class ProvinceDeleteAdminView(GenericAPIView):
     permission_classes = [IsAdminUser]
@@ -71,9 +69,6 @@ class ProvinceDeleteAdminView(GenericAPIView):
         province = get_object_or_404(Province, pk=pk)
         province.delete()
         return Response({"message": "Province deleted successfully"}, status=status.HTTP_200_OK)
-    
-
-
 
 
 class CityListAdminView(GenericAPIView):
@@ -84,14 +79,12 @@ class CityListAdminView(GenericAPIView):
     filterset_class = CityFilter
     search_fields = ['name', 'province__name']
 
-
     def get(self, request):
         cities = City.objects.all()
         cities_qs = self.filter_queryset(cities)
         page = self.paginate_queryset(cities_qs)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
-    
 
 
 class CityDetailAdminView(GenericAPIView):
@@ -102,10 +95,8 @@ class CityDetailAdminView(GenericAPIView):
         city = get_object_or_404(City, pk=pk)
         serializer = self.get_serializer(city)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    
-    
-    
+
+
 class CityCreateAdminView(GenericAPIView):
     serializer_class = CityCreateAdminSerializer
     permission_classes = [IsAdminUser]
@@ -119,7 +110,6 @@ class CityCreateAdminView(GenericAPIView):
         )
         city.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
 
 
 class CityUpdateAdminView(GenericAPIView):
@@ -132,7 +122,6 @@ class CityUpdateAdminView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 class CityDeleteAdminView(GenericAPIView):
