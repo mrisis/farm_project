@@ -49,6 +49,7 @@ urlpatterns = [
                 path('user-update/<int:pk>/', views_admin.UserUpdateAdminView.as_view(), name='user_update'),
                 path('user-create/', views_admin.UserCreateAdminView.as_view(), name='user_create'),
                 path('user-delete/<int:pk>/', views_admin.UserDeleteAdminView.as_view(), name='user_delete'),
+                path('user-active-status/<int:pk>/', views_admin.UserActiveStatusUpdateAPIView.as_view(), name='user_active_status'),
 
                 # role category admin urls
                 path('role-category/list/', views_admin.RoleCategoryListAdminView.as_view(), name='role_category_list'),

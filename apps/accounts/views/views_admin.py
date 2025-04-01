@@ -8,7 +8,8 @@ from apps.accounts.serializers.serializers_admin import AdminLoginSerializer, Us
     RoleListAdminSerializer, RoleDetailAdminSerializer, RoleCreateAdminSerializer, RoleUpdateAdminSerializer, \
     UserAddressListAdminSerializer, UserAddressDetailAdminSerializer, UserAddressCreateAdminSerializer, \
     UserAddressUpdateAdminSerializer, OtpCodeListAdminSerializer, UserRoleListAdminSerializer, \
-    UserRoleDetailAdminSerializer, UserRoleCreateAdminSerializer, UserRoleUpdateAdminSerializer
+    UserRoleDetailAdminSerializer, UserRoleCreateAdminSerializer, UserRoleUpdateAdminSerializer, \
+    UpdateUserActiveStatusSerializer
 from apps.accounts.models import User, RoleCategory, Role, UserAddress, OtpCode, UserRole
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -423,3 +424,19 @@ class UserRoleDeleteAdminView(APIView):
         user_role = get_object_or_404(UserRole, pk=pk)
         user_role.delete()
         return Response({'message': 'User role deleted successfully'}, status=status.HTTP_200_OK)
+
+
+class UserActiveStatusUpdateAdminView(GenericAPIView):
+    serializer_class = UpdateUserActiveStatusSerializer
+    permission_classes = [IsAdminUser]
+
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            user.is_active = serializer.validated_data.get('is_active')
+            user.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

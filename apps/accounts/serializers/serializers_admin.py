@@ -297,8 +297,11 @@ class UserRoleUpdateAdminSerializer(serializers.ModelSerializer):
 
 
 
-        
-        
+class UpdateUserActiveStatusSerializer(serializers.ModelSerializer):
+    is_active = serializers.BooleanField(required=True)
+    class Meta:
+        model = User
+        fields = ['is_active']
         
 
 
