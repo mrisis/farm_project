@@ -12,7 +12,7 @@ class PostListAdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["id", "title", "category", "author_mobile_number"]
+        fields = ["id", "title", "category", "author_mobile_number", "status"]
 
 
 class ProvinceNestedAdminSerializer(serializers.ModelSerializer):

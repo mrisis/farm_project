@@ -9,6 +9,7 @@ class PostFilter(django_filters.FilterSet):
     province = django_filters.CharFilter(field_name='address__province', lookup_expr='exact')
     author_mobile_number = django_filters.CharFilter(field_name='author__mobile_number', lookup_expr='icontains')
     category_name = django_filters.CharFilter(field_name='category__name', lookup_expr='icontains')
+    status = django_filters.CharFilter(field_name='status', lookup_expr='exact')
 
     class Meta:
         model = post_models.Post
@@ -19,6 +20,7 @@ class PostFilter(django_filters.FilterSet):
             'province',
             'author_mobile_number',
             'category_name',
+            'status'
         ]
 
 
