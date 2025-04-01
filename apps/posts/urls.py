@@ -44,6 +44,7 @@ urlpatterns = [
                 path('post-update/<int:pk>/', views_admin.PostUpdateAdminView.as_view(), name='post-update-admin'),
                 path('post-delete/<int:pk>/', views_admin.PostDeleteAdminView.as_view(), name='post-delete-admin'),
                 path('post-status-update/<int:pk>/', views_admin.PostStatusUpdateAdminView.as_view(), name='post-status-update-admin'),
+                path('post-count/', views_admin.PostCountAdminView.as_view(), name='post-count-admin'),
 
                 # post category admin urls
                 path('categories-list/', views_admin.PostCategoryListAdminView.as_view(), name='list-categories-admin'),

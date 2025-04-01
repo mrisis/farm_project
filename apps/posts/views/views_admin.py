@@ -1,5 +1,3 @@
-from functools import partial
-
 from rest_framework.generics import GenericAPIView
 from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, \
     PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, \
@@ -10,7 +8,7 @@ from apps.posts.serializers.serializers_admin import PostListAdminSerializer, Po
     PostCommentCreateAdminSerializer, PostCommentUpdateAdminSerializer, PostRatingListAdminSerializer, \
     PostRatingDetailAdminSerializer, PostRatingCreateAdminSerializer, PostRatingUpdateAdminSerializer, \
     FavoritePostListAdminSerializer, FavoritePostDetailAdminSerializer, FavoritePostCreateAdminSerializer, \
-    FavoritePostUpdateAdminSerializer,  PostStatusUpdateAdminSerializer
+    FavoritePostUpdateAdminSerializer,  PostStatusUpdateAdminSerializer, PostCountAdminSerializer
 from rest_framework.permissions import IsAdminUser
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment, Rating, FavoritePost
@@ -23,6 +21,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from apps.posts.filters import PostFilter, PostCategoryFilterSet, PostImageFilterSet, PostAddressFilterSet, \
     CommentFilterSet, RatingFilterSet, FavoritePostFilterSet
+from django.db.models import Count, Q
 
 
 class PostListAdminView(GenericAPIView):
@@ -525,6 +524,21 @@ class PostStatusUpdateAdminView(GenericAPIView):
 
 
 
+class PostCountAdminView(GenericAPIView):
+    serializer_class = PostCountAdminSerializer
+    permission_classes = [IsAdminUser]
+
+    def get(self,request):
+
+        posts_count = Post.objects.aggregate(
+            total_posts = Count('id'),
+            new_posts = Count('id', filter=Q(status=Post.PostStatus.NEW)),
+            approved_posts = Count('id', filter=Q(status=Post.PostStatus.APPROVED)),
+            rejected_posts = Count('id', filter=Q(status=Post.PostStatus.REJECTED)),
+        )
+        serializer = self.get_serializer(data=posts_count)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 

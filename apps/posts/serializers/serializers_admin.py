@@ -372,3 +372,10 @@ class PostStatusUpdateAdminSerializer(serializers.ModelSerializer):
             validated_data['rejection_reason'] = None
             validated_data['rejection_details'] = None
         return super().update(instance,validated_data)
+
+
+class PostCountAdminSerializer(serializers.Serializer):
+    total_posts = serializers.IntegerField()
+    new_posts = serializers.IntegerField()
+    approved_posts = serializers.IntegerField()
+    rejected_posts = serializers.IntegerField()
