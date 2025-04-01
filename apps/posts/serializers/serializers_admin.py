@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment, Rating, FavoritePost
+from apps.locations.models import Province, City
 from apps.posts.mixins import ImageUrlMixin
 from django.utils import timezone
 from datetime import timedelta
@@ -14,16 +15,44 @@ class PostListAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "category", "author_mobile_number"]
 
 
+class ProvinceNestedAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = ['id', 'name']
+
+
+class CityNestedAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ['id', 'name']
+
+
+class PostAddressNestedAdminSerializer(serializers.ModelSerializer):
+    province = serializers.SerializerMethodField(read_only=True)
+    city = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = PostAddress
+        fields = ['id', 'full_address', 'postal_code', 'province', 'city']
+
+    def get_province(self, obj):
+        return ProvinceNestedAdminSerializer(obj.province).data
+
+    def get_city(self, obj):
+        return CityNestedAdminSerializer(obj.city).data
+
+
 class PostDetailAdminSerializer(serializers.ModelSerializer):
     author_mobile_number = serializers.StringRelatedField(source="author.mobile_number")
     category_name = serializers.StringRelatedField(source="category.name")
     images = serializers.SerializerMethodField()
     total_seconds = serializers.SerializerMethodField(read_only=True)
+    address = PostAddressNestedAdminSerializer(read_only=True)
 
     class Meta:
         model = Post
         fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable",
-                  "author_mobile_number", "category_name", "images", 'total_seconds']
+                  "author_mobile_number", "category_name", "images", 'total_seconds', 'address']
 
     def get_total_seconds(self, obj):
         return obj.get_total_seconds()
