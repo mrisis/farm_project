@@ -102,9 +102,8 @@ class PostCategoryListAdminSerializer(ImageUrlMixin, serializers.ModelSerializer
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['icon'] = self.get_image_url(instance, 'icon')
-        data['parent'] = instance.parent.name if instance.parent else 'بدون دسته بندی پدر'
-        data['description'] = instance.description[:50] + '...' if len(
-            instance.description) > 50 else instance.description
+        data['parent'] = instance.parent.name if instance.parent else None
+        data['description'] = instance.description[:50] + '...' if instance.description and  len(instance.description) > 50 else instance.description
         return data
 
 
