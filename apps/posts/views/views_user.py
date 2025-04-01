@@ -40,7 +40,7 @@ class PostListUserApiView(GenericAPIView):
     ordering = ['-created_at']
 
     def get(self, request):
-        posts_qs = self.filter_queryset(Post.objects.all())
+        posts_qs = self.filter_queryset(Post.objects.filter(status=Post.PostStatus.APPROVED))
         page = self.paginate_queryset(posts_qs)
         serializer = self.get_serializer(page, many=True, method='list', only_fields={
             'id',
