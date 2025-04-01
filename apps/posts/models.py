@@ -1,10 +1,13 @@
 from django.db import models
 from django.utils.text import slugify
+from pydantic import ValidationError
+
 from core.models import BaseModel
 from apps.accounts.models import User
 from apps.files.models import Asset
 from apps.locations.models import Province, City
 from django.utils.timezone import now
+from django.core.exceptions import ValidationError
 
 
 class PostCategory(BaseModel):
@@ -28,6 +31,17 @@ class Post(BaseModel):
         TOMAN = 'Toman', 'IRT'
         RIAL = 'Rial', 'IRR'
 
+    class PostStatus(models.TextChoices):
+        NEW = 'New', 'پست جدید'
+        PENDING = 'Pending', 'در حال بررسی'
+        APPROVED = 'Approved', 'تایید شده'
+        REJECTED = 'Rejected', 'رد شده'
+
+    class RejectionReasonChoices(models.TextChoices):
+        DUPLICATE = 'Duplicate', 'تکراری'
+        INAPPROPRIATE = 'Inappropriate', 'غیر قابل قبول'
+        OTHER = 'Other', 'دیگر'
+
     title = models.CharField(max_length=255)
     body = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
@@ -38,11 +52,23 @@ class Post(BaseModel):
     is_visible_mobile = models.BooleanField(default=False)
     is_chat_avaliable = models.BooleanField(default=False)
 
+    status = models.CharField(max_length=20, choices=PostStatus.choices, default=PostStatus.NEW)
+    rejection_reason = models.CharField(max_length=20, choices=RejectionReasonChoices.choices, null=True, blank=True)
+    rejection_details = models.TextField(null=True, blank=True)
+
     def __str__(self):
         return f'{self.title} by {self.author}'
 
     def get_total_seconds(self):
         return int((now() - self.created_at).total_seconds())
+
+    def clean(self):
+
+        super().clean()
+        if self.status == self.PostStatus.REJECTED and not self.rejection_reason:
+            raise ValidationError({
+                'rejection_reason': 'Rejection reason is required when the post is rejected.'
+            })
 
 
 
