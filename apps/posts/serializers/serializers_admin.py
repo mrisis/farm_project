@@ -103,7 +103,8 @@ class PostCategoryListAdminSerializer(ImageUrlMixin, serializers.ModelSerializer
         data = super().to_representation(instance)
         data['icon'] = self.get_image_url(instance, 'icon')
         data['parent'] = instance.parent.name if instance.parent else None
-        data['description'] = instance.description[:50] + '...' if instance.description and  len(instance.description) > 50 else instance.description
+        data['description'] = instance.description[:50] + '...' if instance.description and len(
+            instance.description) > 50 else instance.description
         return data
 
 
@@ -123,6 +124,10 @@ class PostCategoryUpdateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostCategory
         fields = ["id", "name", "icon", "description", "parent", "slug"]
+
+    def validate_parent(self, value):
+        if self.instance and self.instance.parent is None and value is not None:
+            raise serializers.ValidationError("Cannot assign a parent to a top-level category.")
 
 
 class PostImageListAdminSerializer(serializers.ModelSerializer):
@@ -353,7 +358,6 @@ class FavoritePostUpdateAdminSerializer(serializers.ModelSerializer):
 
 
 class PostStatusUpdateAdminSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Post
         fields = ["id", "status", "rejection_reason", "rejection_details"]
@@ -366,12 +370,11 @@ class PostStatusUpdateAdminSerializer(serializers.ModelSerializer):
                 )
         return data
 
-
-    def update(self, instance,validated_data):
+    def update(self, instance, validated_data):
         if validated_data.get('status') == Post.PostStatus.APPROVED:
             validated_data['rejection_reason'] = None
             validated_data['rejection_details'] = None
-        return super().update(instance,validated_data)
+        return super().update(instance, validated_data)
 
 
 class PostCountAdminSerializer(serializers.Serializer):

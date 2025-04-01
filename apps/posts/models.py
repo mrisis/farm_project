@@ -25,6 +25,14 @@ class PostCategory(BaseModel):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    def clean(self):
+        super().clean()
+        if self.pk:
+            original = PostCategory.objects.get(pk=self.pk)
+            if original.parent is None and self.parent is not None:
+                raise ValidationError({
+                    'parent': 'Cannot change parent for a top-level category.'
+                })
 
 class Post(BaseModel):
     class UnitPriceChoices(models.TextChoices):
