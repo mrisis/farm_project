@@ -7,7 +7,7 @@ from .forms import UserCreationForm,UserchangeForm
 class UserAdmin(BaseUserAdmin):
     form = UserchangeForm
     add_form = UserCreationForm
-    list_display = ['id','mobile_number','first_name','last_name','is_admin']
+    list_display = ['id','mobile_number','first_name','last_name','is_admin', 'is_active']
     list_filter = ('is_admin',)
     fieldsets = (
         (None,{'fields':('mobile_number','password')}),

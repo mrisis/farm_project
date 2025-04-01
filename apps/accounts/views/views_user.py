@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from urllib3.exceptions import ResponseError
+
 from apps.accounts.models import User, OtpCode, RoleCategory, Role, UserAddress, UserRole
 from apps.accounts.serializers.serializers_user import SendOtpCodeSerializer, VerifyOtpCodeSerializer, \
     UserSignupSerializer, RoleCategorySerializer, RoleSerializer, UserAddressListSerializer, UserRolesListSerializer, \
@@ -60,6 +62,11 @@ class VerifyOtpApiView(GenericAPIView):
             return Response({'message': 'InvalidOrExpiredOTP_Code'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.get(mobile_number=mobile_number)
+        if not user.is_active:
+            return Response(
+                {'message': 'UserIsNotActive'}, status=status.HTTP_400_BAD_REQUEST
+            )
+
         refresh = RefreshToken.for_user(user)
         data = {
             'message': 'OTP_VerifiedSuccessfully',
