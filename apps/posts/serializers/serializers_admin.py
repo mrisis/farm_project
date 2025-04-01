@@ -8,6 +8,7 @@ from datetime import timedelta
 class PostListAdminSerializer(serializers.ModelSerializer):
     author_mobile_number = serializers.StringRelatedField(source="author.mobile_number")
     category = serializers.StringRelatedField(source="category.name")
+
     class Meta:
         model = Post
         fields = ["id", "title", "category", "author_mobile_number"]
@@ -17,10 +18,15 @@ class PostDetailAdminSerializer(serializers.ModelSerializer):
     author_mobile_number = serializers.StringRelatedField(source="author.mobile_number")
     category_name = serializers.StringRelatedField(source="category.name")
     images = serializers.SerializerMethodField()
+    total_seconds = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Post
-        fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable", "author_mobile_number", "category_name", "images"]
+        fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable",
+                  "author_mobile_number", "category_name", "images", 'total_seconds']
 
+    def get_total_seconds(self, obj):
+        return obj.get_total_seconds()
 
     def get_images(self, obj):
         request = self.context.get('request')
@@ -31,7 +37,6 @@ class PostDetailAdminSerializer(serializers.ModelSerializer):
                 "id": image.id
             } for image in images
         ]
-    
 
 
 class PostCreateAdminSerializer(serializers.ModelSerializer):
@@ -39,15 +44,16 @@ class PostCreateAdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable", "author", "category", "images_id"]
+        fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable", "author",
+                  "category", "images_id"]
 
     def validate(self, attrs):
         is_visible_mobile = attrs.get('is_visible_mobile', False)
         is_chat_avaliable = attrs.get('is_chat_avaliable', False)
         if not (is_visible_mobile or is_chat_avaliable):
-            raise serializers.ValidationError("is_visible_mobile and is_chat_avaliable cannot be False at the same time")
+            raise serializers.ValidationError(
+                "is_visible_mobile and is_chat_avaliable cannot be False at the same time")
         return attrs
-    
 
 
 class PostUpdateAdminSerializer(serializers.ModelSerializer):
@@ -55,31 +61,28 @@ class PostUpdateAdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable", "author", "category", "images_id"]
+        fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable", "author",
+                  "category", "images_id"]
 
-        
-    
 
 class PostCategoryListAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
     class Meta:
         model = PostCategory
         fields = ["id", "name", "icon", "description", "parent"]
 
-
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['icon'] = self.get_image_url(instance, 'icon')
         data['parent'] = instance.parent.name if instance.parent else 'بدون دسته بندی پدر'
-        data['description'] = instance.description[:50] + '...' if len(instance.description) > 50 else instance.description
+        data['description'] = instance.description[:50] + '...' if len(
+            instance.description) > 50 else instance.description
         return data
-
 
 
 class PostCategoryDetailAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostCategory
         fields = ["id", "name", "icon", "description", "parent", "slug"]
-
 
 
 class PostCategoryCreateAdminSerializer(serializers.ModelSerializer):
@@ -94,15 +97,13 @@ class PostCategoryUpdateAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "icon", "description", "parent", "slug"]
 
 
-
-
 class PostImageListAdminSerializer(serializers.ModelSerializer):
     post = serializers.StringRelatedField(source="post.title")
     author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
+
     class Meta:
         model = PostImage
         fields = ["id", "post", "asset", "caption", "author_post_mobile_number"]
-
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -110,13 +111,12 @@ class PostImageListAdminSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class PostImageDetailAdminSerializer(ImageUrlMixin, serializers.ModelSerializer):
     author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
+
     class Meta:
         model = PostImage
         fields = ["id", "post", "asset", "caption", "author_post_mobile_number"]
-
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -127,13 +127,14 @@ class PostImageDetailAdminSerializer(ImageUrlMixin, serializers.ModelSerializer)
 class PostImageCreateAdminSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(write_only=True, required=True)
     mobile_number = serializers.CharField(write_only=True, required=True)
+
     class Meta:
         model = PostImage
         fields = ["id", "post", "image", "caption", "mobile_number"]
-        
+
         extra_kwargs = {
             'post': {'required': True},
-            }
+        }
 
     def validate(self, attrs):
         request = self.context.get('request')
@@ -147,12 +148,11 @@ class PostImageCreateAdminSerializer(serializers.ModelSerializer):
         return attrs
 
 
-
-
 class PostAddressListAdminSerializer(serializers.ModelSerializer):
     author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
     province = serializers.StringRelatedField(source="province.name")
     post = serializers.StringRelatedField(source="post.title")
+
     class Meta:
         model = PostAddress
         fields = ["id", "post", "province", "author_post_mobile_number"]
@@ -163,10 +163,11 @@ class PostAddressDetailAdminSerializer(serializers.ModelSerializer):
     province = serializers.StringRelatedField(source="province.name")
     city = serializers.StringRelatedField(source="city.name")
     author_post_mobile_number = serializers.StringRelatedField(source="post.author.mobile_number")
+
     class Meta:
         model = PostAddress
-        fields = ["id", "post", "province", "city", "lat", "lng", "full_address", "postal_code", "author_post_mobile_number"]
-
+        fields = ["id", "post", "province", "city", "lat", "lng", "full_address", "postal_code",
+                  "author_post_mobile_number"]
 
 
 class PostAddressCreateAdminSerializer(serializers.ModelSerializer):
@@ -181,9 +182,6 @@ class PostAddressUpdateAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "post", "province", "city", "lat", "lng", "full_address", "postal_code"]
 
 
-
-
-
 class PostCommentListAdminSerializer(serializers.ModelSerializer):
     post = serializers.StringRelatedField(source="post.title")
     author = serializers.StringRelatedField(source="author.mobile_number")
@@ -192,21 +190,19 @@ class PostCommentListAdminSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ["id", "post", "author", "text", "parent"]
 
-
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data['text'] = instance.text[:50] + '...' if instance.text else 'بدون نظر'
         return data
 
 
-
 class PostCommentDetailAdminSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     post = serializers.SerializerMethodField()
+
     class Meta:
         model = Comment
         fields = ["id", "post", "author", "text", "parent"]
-
 
     def get_author(self, obj):
         return {
@@ -217,14 +213,13 @@ class PostCommentDetailAdminSerializer(serializers.ModelSerializer):
             "email": obj.author.email,
 
         }
-    
+
     def get_post(self, obj):
         return {
             "id": obj.post.id,
             "title": obj.post.title,
             "category": obj.post.category.name,
         }
-
 
 
 class PostCommentCreateAdminSerializer(serializers.ModelSerializer):
@@ -233,17 +228,16 @@ class PostCommentCreateAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "post", "author", "text", "parent"]
 
 
-
 class PostCommentUpdateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["id", "post", "author", "text", "parent"]
 
 
-
 class PostRatingListAdminSerializer(serializers.ModelSerializer):
     post = serializers.StringRelatedField(source="post.title")
     author = serializers.StringRelatedField(source="author.mobile_number")
+
     class Meta:
         model = Rating
         fields = ["id", "post", "author", "score"]
@@ -252,10 +246,10 @@ class PostRatingListAdminSerializer(serializers.ModelSerializer):
 class PostRatingDetailAdminSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     post = serializers.SerializerMethodField()
+
     class Meta:
         model = Rating
         fields = ["id", "post", "author", "score"]
-
 
     def get_author(self, obj):
         return {
@@ -264,14 +258,13 @@ class PostRatingDetailAdminSerializer(serializers.ModelSerializer):
             "first_name": obj.author.first_name,
             "last_name": obj.author.last_name,
         }
-    
+
     def get_post(self, obj):
         return {
             "id": obj.post.id,
             "title": obj.post.title,
             "category": obj.post.category.name,
         }
-
 
 
 class PostRatingCreateAdminSerializer(serializers.ModelSerializer):
@@ -280,40 +273,36 @@ class PostRatingCreateAdminSerializer(serializers.ModelSerializer):
         fields = ["id", "post", "author", "score"]
 
 
-
-
-
 class PostRatingUpdateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = ["id", "post", "author", "score"]
 
 
-
 class FavoritePostListAdminSerializer(serializers.ModelSerializer):
     post = serializers.StringRelatedField(source="post.title")
     user = serializers.StringRelatedField(source="user.mobile_number")
+
     class Meta:
         model = FavoritePost
         fields = ["id", "post", "user"]
-
 
 
 class FavoritePostDetailAdminSerializer(serializers.ModelSerializer):
     post = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+
     class Meta:
         model = FavoritePost
         fields = ["id", "post", "user"]
 
-    
     def get_post(self, obj):
         return {
             "id": obj.post.id,
             "title": obj.post.title,
             "category": obj.post.category.name,
         }
-        
+
     def get_user(self, obj):
         return {
             "id": obj.user.id,
@@ -323,19 +312,13 @@ class FavoritePostDetailAdminSerializer(serializers.ModelSerializer):
         }
 
 
-        
-        
-
 class FavoritePostCreateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoritePost
         fields = ["id", "post", "user"]
-        
-        
 
 
 class FavoritePostUpdateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoritePost
         fields = ["id", "post", "user"]
-

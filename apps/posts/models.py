@@ -4,6 +4,7 @@ from core.models import BaseModel
 from apps.accounts.models import User
 from apps.files.models import Asset
 from apps.locations.models import Province, City
+from django.utils.timezone import now
 
 
 class PostCategory(BaseModel):
@@ -39,6 +40,10 @@ class Post(BaseModel):
 
     def __str__(self):
         return f'{self.title} by {self.author}'
+
+    def get_total_seconds(self):
+        return int((now() - self.created_at).total_seconds())
+
 
 
 class PostImage(BaseModel):

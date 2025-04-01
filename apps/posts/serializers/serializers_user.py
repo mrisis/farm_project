@@ -147,7 +147,7 @@ class PostListUserSerializer(serializers.ModelSerializer):
         return False
 
     def get_total_seconds(self, obj):
-        return int((now() - obj.created_at).total_seconds())
+        return obj.get_total_seconds()
 
 
 class PostCreateUpdateUserSerializer(serializers.ModelSerializer):
