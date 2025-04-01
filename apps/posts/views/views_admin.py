@@ -1,3 +1,5 @@
+from functools import partial
+
 from rest_framework.generics import GenericAPIView
 from apps.posts.serializers.serializers_admin import PostListAdminSerializer, PostDetailAdminSerializer, \
     PostCreateAdminSerializer, PostUpdateAdminSerializer, PostCategoryListAdminSerializer, \
@@ -8,7 +10,7 @@ from apps.posts.serializers.serializers_admin import PostListAdminSerializer, Po
     PostCommentCreateAdminSerializer, PostCommentUpdateAdminSerializer, PostRatingListAdminSerializer, \
     PostRatingDetailAdminSerializer, PostRatingCreateAdminSerializer, PostRatingUpdateAdminSerializer, \
     FavoritePostListAdminSerializer, FavoritePostDetailAdminSerializer, FavoritePostCreateAdminSerializer, \
-    FavoritePostUpdateAdminSerializer
+    FavoritePostUpdateAdminSerializer,  PostStatusUpdateAdminSerializer
 from rest_framework.permissions import IsAdminUser
 from core.utils.C_drf.C_paginations import CustomPageNumberPagination
 from apps.posts.models import Post, PostImage, PostCategory, PostAddress, Comment, Rating, FavoritePost
@@ -506,3 +508,36 @@ class FavoritePostDeleteAdminView(GenericAPIView):
         favorite_post = get_object_or_404(FavoritePost, pk=pk)
         favorite_post.delete()
         return Response({"message": "Favorite Post Deleted Successfully"}, status=status.HTTP_200_OK)
+
+
+class PostStatusUpdateAdminView(GenericAPIView):
+    serializer_class = PostStatusUpdateAdminSerializer
+    permission_classes = [IsAdminUser]
+
+
+    def put(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        serializer = self.get_serializer(post, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

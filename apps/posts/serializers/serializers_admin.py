@@ -350,3 +350,25 @@ class FavoritePostUpdateAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoritePost
         fields = ["id", "post", "user"]
+
+
+class PostStatusUpdateAdminSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Post
+        fields = ["id", "status", "rejection_reason", "rejection_details"]
+
+    def validate(self, data):
+        if data.get('status') == Post.PostStatus.REJECTED:
+            if not data.get('rejection_reason'):
+                raise serializers.ValidationError(
+                    "rejection_reason is required when status is REJECTED"
+                )
+        return data
+
+
+    def update(self, instance,validated_data):
+        if validated_data.get('status') == Post.PostStatus.APPROVED:
+            validated_data['rejection_reason'] = None
+            validated_data['rejection_details'] = None
+        return super().update(instance,validated_data)
