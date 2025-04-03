@@ -1,6 +1,6 @@
 from apps.accounts.models import User, RoleCategory, Role, UserAddress, OtpCode, UserRole
 from rest_framework import serializers
-from apps.locations.models import Province
+from apps.locations.models import Province, City
 from apps.accounts.models import UserAddress
 from apps.accounts.mixins import ImageUrlMixin
 class AdminLoginSerializer(serializers.Serializer):
@@ -196,10 +196,21 @@ class UserAddressListAdminSerializer(serializers.ModelSerializer):
         return f"{obj.user.first_name} {obj.user.last_name}".strip()
 
 
+class ProvinceNestedAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = ['id', 'name', 'code']
+
+
+class CityNestedAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ['id', 'name']
+
 
 class UserAddressDetailAdminSerializer(serializers.ModelSerializer):
-    province = serializers.StringRelatedField(source='province.name')
-    city = serializers.StringRelatedField(source='city.name')
+    province = ProvinceNestedAdminSerializer()
+    city = CityNestedAdminSerializer()
     user = serializers.SerializerMethodField()
 
     class Meta:
