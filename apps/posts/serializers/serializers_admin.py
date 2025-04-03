@@ -44,7 +44,7 @@ class PostAddressNestedAdminSerializer(serializers.ModelSerializer):
 
 class PostDetailAdminSerializer(serializers.ModelSerializer):
     author_mobile_number = serializers.StringRelatedField(source="author.mobile_number")
-    category_name = serializers.StringRelatedField(source="category.name")
+    category = serializers.SerializerMethodField(read_only=True)
     images = serializers.SerializerMethodField()
     total_seconds = serializers.SerializerMethodField(read_only=True)
     address = PostAddressNestedAdminSerializer(read_only=True)
@@ -52,7 +52,7 @@ class PostDetailAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ["id", "title", "body", "unit_price", "price", "is_visible_mobile", "is_chat_avaliable",
-                  "author_mobile_number", "category_name", "images", 'total_seconds', 'address']
+                  "author_mobile_number", "category", "images", 'total_seconds', 'address']
 
     def get_total_seconds(self, obj):
         return obj.get_total_seconds()
@@ -66,6 +66,13 @@ class PostDetailAdminSerializer(serializers.ModelSerializer):
                 "id": image.id
             } for image in images
         ]
+
+    def get_category(self, obj):
+        return {
+
+            "id": obj.category.id,
+            "name": obj.category.name,
+        }
 
 
 class PostCreateAdminSerializer(serializers.ModelSerializer):
