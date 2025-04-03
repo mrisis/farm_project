@@ -16,6 +16,8 @@ from apps.locations.filters import CityFilter
 class ProvinceListAdminView(GenericAPIView):
     serializer_class = ProvinceListAdminSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [SearchFilter]
+    search_fields = ['name', 'code']
     pagination_class = CustomPageNumberPagination
 
     def get(self, request):
